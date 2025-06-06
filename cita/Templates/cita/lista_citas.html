@@ -1,0 +1,10 @@
+<h2>Lista de Citas</h2>
+<a href="{% url 'nueva_cita' %}">Nueva Cita</a>
+<ul>
+    {% for cita in citas %}
+        <li>{{ cita.cliente.nombre }} - {{ cita.fecha_hora }} - {{ cita.servicio }} 
+            <a href="{% url 'editar_cita' cita.id %}">Editar</a>
+            <a href="{% url 'eliminar_cita' cita.id %}">Eliminar</a>
+        </li>
+    {% endfor %}
+</ul>

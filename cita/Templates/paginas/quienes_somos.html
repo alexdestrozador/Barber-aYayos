@@ -1,0 +1,28 @@
+{% load static %}
+
+  <meta charset="UTF-8">
+  <title>Actualizar Quienes Somos</title>
+  <link rel="stylesheet" href="{% static 'Css/cruds.css'%}">
+</head>
+<body>
+    {% include "inc/header.html" %}
+  <div class="contenedor">
+
+    <div class="formulario-card">
+      <h2>Actualizar Quienes somos:</h2>
+
+      <form method="post">
+         {% csrf_token %}
+        <label for="titulo">Título de Página</label>
+        <input type="text" id="titulo" name="titulo" value="{{ seccion.titulo }}">
+
+        <label for="descripcion">Descripción de Página</label>
+        <textarea id="descripcion" name="descripcion" rows="6">{{ seccion.descripcion }}</textarea>
+        </textarea>
+
+        <button type="submit">Actualizar</button>
+      </form>
+    </div>
+  </div>
+   {% include "inc/footer.html" %}
+

@@ -1,0 +1,69 @@
+from django.db import models
+
+class Cliente(models.Model):
+    nombre = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=15)
+    correo = models.EmailField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nombre
+
+    
+class Servicio(models.Model):
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True, null=True)
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    duracion = models.PositiveIntegerField(help_text="Duración en minutos")
+    
+    def __str__(self):
+        return self.nombre
+
+
+class Cita(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    fecha_hora = models.DateTimeField()
+    servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE)
+    estado = models.CharField(max_length=50, choices=[
+        ('Pendiente', 'Pendiente'),
+        ('Confirmada', 'Confirmada'),
+        ('Cancelada', 'Cancelada'),
+        ('Completada', 'Completada'),
+    ], default='Pendiente')
+
+    def __str__(self):
+        return f"{self.cliente.nombre} - {self.fecha_hora}"
+    
+    
+
+
+class Barbero(models.Model):
+    nombre = models.CharField(max_length=30)
+    username = models.CharField(max_length=30, unique=True, default='usuario_temp')
+    telefono = models.CharField(max_length=20)
+    email = models.EmailField()
+    
+
+
+class Horario(models.Model):
+    barbero = models.ForeignKey(Barbero, on_delete=models.CASCADE)
+    dia = models.CharField(max_length=15, choices=[
+        ('Lunes', 'Lunes'),
+        ('Martes', 'Martes'),
+        ('Miércoles', 'Miércoles'),
+        ('Jueves', 'Jueves'),
+        ('Viernes', 'Viernes'),
+        ('Sábado', 'Sábado'),
+        ('Domingo', 'Domingo'),
+    ])
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+
+    def __str__(self):
+        return f"{self.barbero.nombre} - {self.dia} de {self.hora_inicio} a {self.hora_fin}"
+    
+class QuienesSomos(models.Model):
+    titulo = models.CharField(max_length=200)
+    descripcion = models.TextField()
+
+    def __str__(self):
+        return self.titulo

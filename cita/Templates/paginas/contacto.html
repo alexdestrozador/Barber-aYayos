@@ -1,0 +1,37 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Actualizar Contacto</title>
+  <link rel="stylesheet" href="{% static 'Css/cruds.css'%}">
+</head>
+<body>
+    {% include "inc/header.html" %}
+  <div class="contenedor">
+
+    <div class="formulario-card">
+      <h2>Actualizar Contacto:</h2>
+
+      <form>
+        <label for="titulo">Título de la Sección</label>
+        <input type="text" id="titulo" name="titulo" value="Contacto">
+
+        <label for="descripcion">Correo Electrónico</label>
+        <textarea id="descripcion" name="descripcion" rows="6">
+Cada visita es una oportunidad para brindar no solo un excelente servicio, sino también una experiencia que celebre la individualidad de cada hombre. Creemos en la importancia de un buen cuidado personal como parte integral del estilo de vida..
+        </textarea>
+<label for="descripcion">Número de contacto</label>
+<input type="number" id="titulo" name="titulo" value="Contacto">
+<label for="horario">Horario</label>
+<input type="text" id="titulo" name="titulo" value="Horario">
+<label for="direccion">Dirección</label>
+<input type="text" id="titulo" name="titulo" value="Horario">
+        <button type="submit">Actualizar</button>
+      </form>
+    </div>
+  </div>
+   {% include "inc/footer.html" %}
+</body>
+</html>

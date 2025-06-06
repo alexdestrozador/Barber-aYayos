@@ -1,0 +1,51 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+
+{% include "inc/header.html" %}
+
+<div class="services-container">
+    <div class="services-header">
+        <h2>Horarios Registrados</h2>
+        <a href="{% url 'nuevo_horario' %}" class="btn-gold">Agregar nuevo horario</a>
+    </div>
+
+    <div class="services-card">
+        <table class="services-table">
+            <thead>
+                <tr>
+                    <th>Barbero</th>
+                    <th>Día</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for barbero, horarios in barberos_con_horarios.items %}
+                    {% for horario in horarios %}
+                        <tr>
+                            <td>{{ barbero.nombre }}</td>
+                            <td>{{ horario.dia }}</td>
+                            <td>{{ horario.hora_inicio }}</td>
+                            <td>{{ horario.hora_fin }}</td>
+                            <td class="text-center">
+                                {% if horario.id %}
+                                    
+                                    <a href="{% url 'eliminar_horario' horario.id %}" class="btn btn-sm btn-dark" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-light">No hay horarios registrados.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include "inc/footer.html" %}
+

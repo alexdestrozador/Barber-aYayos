@@ -1,0 +1,38 @@
+{% load static %}
+{% include "inc/header.html" %}
+
+<div class="container mt-5">
+    <div class="card shadow p-4">
+        <h2 class="mb-4 text-center">Agenda tu Cita</h2>
+
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <form action="" method="post">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="fecha_hora" class="form-label">Fecha y Hora:</label>
+                <input type="datetime-local" name="fecha_hora" id="fecha_hora" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="servicio" class="form-label">Servicio:</label>
+                <select name="servicio_id" id="servicio" class="form-select" required>
+                    {% for servicio in servicios %}
+                        <option value="{{ servicio.id }}">{{ servicio.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <input type="hidden" name="estado" value="Pendiente">
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-success">Agendar Cita</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% include "inc/footer.html" %}

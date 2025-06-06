@@ -1,0 +1,48 @@
+{% load static %}
+
+
+<link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+
+{% include "inc/header.html" %}
+<div class="services-container">
+    <div class="services-header">
+        <h2>Lista de Barberos</h2>
+        <a href="{% url 'nuevo_barbero' %}" class="btn-gold">Agregar Barbero</a>
+    </div>
+
+    <div class="services-card">
+        <table class="services-table">
+            <thead>
+                <tr>
+                    <th>Nombre Barbero</th>
+                    <th>Nombre de Usuario</th>
+                    <th>Teléfono</th>
+                    <th>Email</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for barbero in barberos %}
+                    <tr>
+                        <td>{{ barbero.nombre }}</td>
+                        <td>{{barbero.username}}</td>
+                        <td>{{ barbero.telefono }}</td>
+                        <td>{{ barbero.email }}</td>
+                        <td class="text-center">
+                            <a href="{% url 'editar_barbero' barbero.id %}" class="btn btn-sm btn-warning">Editar</a>
+                            <a href="{% url 'eliminar_barbero' barbero.id %}" class="btn btn-sm btn-dark" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-light">No hay barberos registrados.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include "inc/footer.html" %}
+
+

@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Control</title>
+    <link rel="stylesheet" href="{% static 'Css/panel.css' %}">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    {% include "inc/header.html" %}
+
+   <div class="container mt-5 pt-5">
+    <div class="text-center bg-light p-5 rounded-4 shadow">
+        <h1 class="display-5 fw-bold">Panel de Control</h1>
+        
+        <div class="row mt-4">
+          
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center p-3">
+                    <div class="icon mb-2">
+                        <i data-lucide="user" class="fs-1"></i>
+                    </div>
+                    <h2 class="h5">Barberos Registrados</h2>
+                    <p>{{ num_barberos }}</p>
+                    <a href="{% url 'lista_barberos' %}" class="btn btn-warning">Ver Barberos</a>
+                </div>
+            </div>
+
+           
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center p-3">
+                    <div class="icon mb-2">
+                        <i data-lucide="scissors" class="fs-1"></i>
+                    </div>
+                    <h2 class="h5">Servicios Disponibles</h2>
+                    <p>{{ num_servicios }}</p>
+                    <a href="{% url 'lista_servicios' %}" class="btn btn-warning">Ver Servicios</a>
+                </div>
+            </div>
+
+  
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center p-3">
+                    <div class="icon mb-2">
+                        <i data-lucide="calendar" class="fs-1"></i>
+                    </div>
+                    <h2 class="h5">Citas Programadas</h2>
+                    <p>{{ num_citas }}</p>
+                    <a href="{% url 'lista_citas' %}" class="btn btn-warning">Ver Citas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    lucide.createIcons();
+</script>
+
+
+    {% include "inc/footer.html" %}
+
+</body>
+</html>
