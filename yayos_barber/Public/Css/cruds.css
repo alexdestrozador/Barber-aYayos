@@ -330,3 +330,34 @@ button {
 button:hover {
   background-color: #f0c040;
 }
+
+.empty-message {
+    color: white;  /* Cambiado a blanco */
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-top: 20px;
+}
+.form-label {
+    color: #fff;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.gold-input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px solid gold;
+    background-color: #000;
+    color: #fff;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.gold-input:focus {
+    border-color: #ffd700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    outline: none;
+}
+

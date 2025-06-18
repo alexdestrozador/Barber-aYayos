@@ -1,6 +1,7 @@
+from django.db.models import Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .models import Cita, Cliente, Servicio, Horario, Barbero, QuienesSomos
+from .models import Cita, Cliente, Servicio, Horario, Barbero, QuienesSomos, Pago, Comision
 from datetime import datetime
 from django.utils.timezone import datetime
 from django.http import HttpResponse, JsonResponse
@@ -369,11 +370,132 @@ def quienes_somos(request):
     seccion, created = QuienesSomos.objects.get_or_create(id=1)
 
     if request.method == 'POST':
-        seccion.titulo = request.POST.get('titulo')
-        seccion.descripcion = request.POST.get('descripcion')
+        seccion.titulo = request.POST.get('titulo') 
+        seccion.descripcion = request.POST.get('descripcion') 
         seccion.save()
-        return redirect('quienes_somos') 
+        return redirect('index') 
 
     return render(request, 'paginas/quienes_somos.html', {'seccion': seccion})
 
+def index_qs(request):
+    contenido = QuienesSomos.objects.all()
+    return render(request, 'Landing/index.html', {'contenido': contenido})
 
+
+
+def ingresos_por_barbero(request):
+    barberos = Barbero.objects.all()
+    datos = []
+
+    for barbero in barberos:
+        pagos = Pago.objects.filter(
+            cita__barbero=barbero,
+            pagado=True
+        )
+        total = pagos.aggregate(Sum('monto'))['monto__sum'] or 0
+
+        datos.append({
+            'barbero': barbero.nombre,
+            'total_ingresos': total,
+        })
+
+    return render(request, 'finanzas/ingresos_barbero.html', {'datos': datos})
+
+def reporte_ingresos(request):
+    total_ingresos = Pago.objects.filter(pagado=True).aggregate(Sum('monto'))['monto__sum'] or 0
+    return render(request, 'finanzas/reporte_ingresos.html', {'total_ingresos': total_ingresos})
+
+def ingresos_barbero(request):
+    barberos = Barbero.objects.all()
+    datos = []
+
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+
+    for barbero in barberos:
+        citas = Cita.objects.filter(barbero=barbero, estado='Completada')
+
+        if fecha_inicio and fecha_fin:
+            citas = citas.filter(fecha_hora__date__range=[fecha_inicio, fecha_fin])
+
+        total = sum(cita.servicio.precio for cita in citas)
+        comision = getattr(barbero.comision, 'porcentaje', 0)
+        pago_barbero = total * (comision / 100)
+        ingreso_barberia = total - pago_barbero
+
+        datos.append({
+            'barbero': barbero,
+            'total': total,
+            'comision': comision,
+            'pago_barbero': pago_barbero,
+            'ingreso_barberia': ingreso_barberia,
+        })
+
+    contexto = {
+        'datos': datos,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+    }
+
+    return render(request, 'finanzas/ingresos_barbero.html', contexto)
+
+def pagos(request):
+    estado = request.GET.get('estado')  # 'realizado' o 'pendiente'
+    fecha_inicio = request.GET.get('fecha_inicio')
+    fecha_fin = request.GET.get('fecha_fin')
+
+    pagos = Pago.objects.all()
+
+    if estado == 'realizado':
+        pagos = pagos.filter(pagado=True)
+    elif estado == 'pendiente':
+        pagos = pagos.filter(pagado=False)
+
+    if fecha_inicio:
+        pagos = pagos.filter(fecha_pago__gte=fecha_inicio)
+    if fecha_fin:
+        pagos = pagos.filter(fecha_pago__lte=fecha_fin)
+
+    return render(request, 'finanzas/pagos.html', {
+        'pagos': pagos,
+        'estado': estado,
+        'fecha_inicio': fecha_inicio,
+        'fecha_fin': fecha_fin,
+    })
+
+def configurar_comisiones(request):
+    barberos = Barbero.objects.all()
+    return render(request, 'finanzas/configurar_comisiones.html', {'barberos': barberos})
+
+def editar_comision(request, barbero_id):
+    barbero = get_object_or_404(Barbero, id=barbero_id)
+    comision, created = Comision.objects.get_or_create(barbero=barbero)
+
+    if request.method == 'POST':
+        porcentaje = request.POST.get('porcentaje')
+
+        if porcentaje is None or porcentaje.strip() == "":
+            # Mostrar un mensaje o manejar el error
+            return render(request, 'finanzas/editar_comision.html', {
+                'barbero': barbero,
+                'comision': comision,
+                'error': "El campo 'porcentaje' no puede estar vacío."
+            })
+
+        try:
+            comision.porcentaje = float(porcentaje)
+            comision.save()
+            return redirect('configurar_comisiones')
+        except ValueError:
+            return render(request, 'finanzas/editar_comision.html', {
+                'barbero': barbero,
+                'comision': comision,
+                'error': "Porcentaje inválido. Debe ser un número."
+            })
+
+    return render(request, 'finanzas/editar_comision.html', {
+        'barbero': barbero,
+        'comision': comision
+    })
+    
+    

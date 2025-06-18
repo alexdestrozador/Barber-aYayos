@@ -60,7 +60,6 @@
                       </a>
                       <ul class="dropdown-menu dropdown-menu-dark">
                           <li><a class="dropdown-item" href="#">Todas las citas</a></li>
-                          <li><a class="dropdown-item" href="#">Aceptar cita</a></li>
                           <li><a class="dropdown-item" href="#">Citas Aceptadas</a></li>
                           <li><a class="dropdown-item" href="#">Citas Rechazadas</a></li>
                       </ul>
@@ -75,29 +74,21 @@
                         <li><a class="dropdown-item" href="{% url 'nuevo_horario' %}">Horario de Barberos</a></li>
                     </ul>
                 </li>
-                  <li class="nav-item">
-                    <a class="nav-link" href="#">Agregar cliente</a>
-                </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Lista de clientes</a>
+                  <a class="nav-link" href="#">Clientes Registrados</a>
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Reportes
+                    📊 Finanzas
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark">
-                    <li><a class="dropdown-item" href="#">Facturas por fecha</a></li>
-                    <li><a class="dropdown-item" href="#">Reporte de ventas</a></li>
-                    <li><a class="dropdown-item" href="#">Citas Aceptadas</a></li>
-                    <li><a class="dropdown-item" href="#">Citas Rechazadas</a></li>
+                    <li><a class="dropdown-item" href="{% url 'reporte_ingresos' %}">📈 Reportes de ingresos</a></li>
+                    <li><a class="dropdown-item" href="{% url 'ingresos_barbero' %}">👥 Ingresos por barbero</a></li>
+                    <li><a class="dropdown-item" href="{% url 'pagos' %}">💰 Pagos</a></li>
+                    <li><a class="dropdown-item" href="{% url 'configurar_comisiones' %}">⚙️ Configurar comisiones</a></li>
                 </ul>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Buscar cita</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Buscar Facturas</a>
-        </li>
+            
             
                 </ul>
 
@@ -125,7 +116,7 @@
           <ul class="dropdown-menu dropdown-menu-end text-small">
               
               <li><a class="dropdown-item" href="#">Ajustes</a></li>
-              <li><a class="dropdown-item" href="#">Perfil</a></li>
+             
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="{% url 'landing' %}">Salir</a></li>
           </ul>

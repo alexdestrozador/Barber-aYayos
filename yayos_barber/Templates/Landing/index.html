@@ -44,13 +44,17 @@
 </div>
         </div>
     </header>
-   <section id="quienesomos" class="acerca-section">
-    <h2 class="acerca-titulo">{{ seccion.titulo }}</h2>
+   
+<section id="quienesomos" class="acerca-section">
+   {% for contenid in contenido %}
+    <h2>Innjfd{{ contenido.titulo }}</h2>
+    <h2 class="acerca-titulo">{{ contenid.titulo }}</h2>
     <hr class="acerca-linea">
-    <p class="acerca-texto">
-       {{ seccion.descripcion|linebreaksbr }}
-    </p>
+    <p class="acerca-texto">{{ contenid.descripcion }}</p>
+    {% endfor %}
 </section>
+
+
     <section id="servicios">
     <h2 class="titulo">SERVICIOS</h2>
     <div class="subtitulo">DESCUBRE Y RESERVA NUESTROS SERVICIOS EXCLUSIVOS, DISEÑADOS PARA TI<br>
@@ -134,9 +138,4 @@
     <a href="#" style="margin: 0 10px; color: white;">TikTok</a>
   </div>
 </footer>
-
-
-</body>
-
-</html>
 

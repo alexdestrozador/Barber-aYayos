@@ -19,8 +19,15 @@ class Servicio(models.Model):
         return self.nombre
 
 
+class Barbero(models.Model):
+    nombre = models.CharField(max_length=30)
+    username = models.CharField(max_length=30, unique=True, default='usuario_temp')
+    telefono = models.CharField(max_length=20)
+    email = models.EmailField()
+    
 class Cita(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    barbero = models.ForeignKey(Barbero, on_delete=models.SET_NULL, null=True)
     fecha_hora = models.DateTimeField()
     servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE)
     estado = models.CharField(max_length=50, choices=[
@@ -32,17 +39,6 @@ class Cita(models.Model):
 
     def __str__(self):
         return f"{self.cliente.nombre} - {self.fecha_hora}"
-    
-    
-
-
-class Barbero(models.Model):
-    nombre = models.CharField(max_length=30)
-    username = models.CharField(max_length=30, unique=True, default='usuario_temp')
-    telefono = models.CharField(max_length=20)
-    email = models.EmailField()
-    
-
 
 class Horario(models.Model):
     barbero = models.ForeignKey(Barbero, on_delete=models.CASCADE)
@@ -67,3 +63,20 @@ class QuienesSomos(models.Model):
 
     def __str__(self):
         return self.titulo
+    
+class Comision(models.Model):
+    barbero = models.OneToOneField(Barbero, on_delete=models.CASCADE)
+    porcentaje = models.DecimalField(max_digits=5, decimal_places=2, help_text="Porcentaje de comisión sobre el servicio")
+
+    def __str__(self):
+        return f"{self.barbero.nombre} - {self.porcentaje}%"
+    
+
+class Pago(models.Model):
+    cita = models.OneToOneField(Cita, on_delete=models.CASCADE)
+    fecha_pago = models.DateField(auto_now_add=True)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    pagado = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Pago de {self.cita} - {'Pagado' if self.pagado else 'Pendiente'}"

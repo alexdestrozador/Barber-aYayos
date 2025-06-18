@@ -1,0 +1,42 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Css/perfiles.css' %}">
+{% include 'inc/header.html' %}
+<div class="perfil-container">
+    <h2 class="perfil-title">👤 Mi Perfil Administrativo</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="nombre">Nombre completo:</label>
+            <input type="text" id="nombre" name="nombre" value="{{ user.nombre }}">
+        </div>
+
+        <div class="form-group">
+            <label for="email">Correo electrónico:</label>
+            <input type="email" id="email" name="email" value="{{ user.email }}">
+        </div>
+
+        <div class="form-group">
+            <label for="telefono">Teléfono:</label>
+            <input type="tel" id="telefono" name="telefono" value="{{ user.telefono }}">
+        </div>
+
+        <div class="form-group">
+            <label for="foto">Foto de perfil:</label>
+            <input type="file" id="foto" name="foto">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Nueva contraseña:</label>
+            <input type="password" id="password" name="password">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn-save">Guardar cambios</button>
+        </div>
+    </form>
+</div>
+
+{% include 'inc/footer.html' %}
