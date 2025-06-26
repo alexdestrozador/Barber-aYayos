@@ -79,6 +79,15 @@
     {% endif %}
 </div>
 
+<div class="form-group">
+    <label for="password">Contraseña *</label>
+    <input type="password" name="password" id="password" required>
+    {% if errores.password %}
+        <p class="error-text">{{ errores.password }}</p>
+    {% endif %}
+</div>
+
+
 <div class="form-actions">
     <a href="{% url 'lista_barberos' %}" class="btn-secondary">Volver</a>
     <button type="submit" class="btn-gold">Guardar Barbero</button>

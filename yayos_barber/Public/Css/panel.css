@@ -1,51 +1,40 @@
-body {
-            background-color: #121212;
-            color: #f8f9fa;
-        }
+.card-box {
+    background: #FFD700;
+    border-radius: 10px;
+    padding: 20px;
+    color: #FFD700;
+    box-shadow: 0 4px 8px rgba(216, 168, 7, 0.785);
+    text-align: center;
+    transition: transform 0.3s;
+}
 
-        .panel-container {
-            background: #1c1c1c;
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 0 15px rgba(218, 165, 32, 0.2);
-        }
+.card-box:hover {
+    transform: translateY(-5px);
+}
 
-        .dashboard-title {
-            color: gold;
-            font-weight: bold;
-        }
+.bg-orange { background-color: #000000; }
+.bg-dark-gray { background-color: #000000; }
+.bg-blue { background-color: #000000; }
+.bg-green { background-color: #000000; }
+.bg-red { background-color: #000000; }
 
-        .card-custom {
-            background: #222;
-            border: 1px solid gold;
-            color: white;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+.icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
 
-        .card-custom:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0 10px gold;
-        }
+.btn-gold-outline {
+    color: #FFD700;              /* Texto dorado */
+    background-color: #000000;   /* Fondo negro */
+    border: 2px solid #FFD700;   /* Borde dorado */
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
 
-        .card-custom .icon {
-            color: gold;
-            margin-bottom: 10px;
-        }
-
-        .btn-gold {
-            background-color: gold;
-            color: black;
-            font-weight: bold;
-            border: none;
-        }
-
-        .btn-gold:hover {
-            background-color: #e0b800;
-            color: black;
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-     
+.btn-gold-outline:hover {
+    background-color: #FFD700;  /* Al pasar el mouse */
+    color: #000000;             /* Texto negro */
+}

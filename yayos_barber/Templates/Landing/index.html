@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Yayo's Barber</title>
-    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+    <link rel="stylesheet" href="{% static 'Css/landing.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="hero">
   <nav class="menu">
     <div class="logo">
-      <a href="{% url 'home' %}">
+      <a href="#reservar">
         <img src="{% static 'img/logo.png' %}" alt="Yayo's Barber" style="height: 60px;">
       </a>
     </div>
@@ -24,7 +24,7 @@
     </ul>
 
     <div class="login-btn">
-        <a href="">Iniciar sesión</a>
+        <a href="{% url 'login' %}">Iniciar sesión</a> 
     </div>
 </nav>
 

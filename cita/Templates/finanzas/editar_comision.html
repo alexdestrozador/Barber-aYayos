@@ -1,20 +1,31 @@
 {% load static %}
 
-  {% include "inc/header.html" %}
+<link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
 
-<h2>Editar Comisión - {{ barbero.nombre }}</h2>
+{% include "inc/header.html" %}
 
-{% if error %}
-  <div style="color: red; margin-bottom: 10px;">{{ error }}</div>
-{% endif %}
+<div class="form-wrapper">
+    <div class="form-card">
+        <h2 class="form-title">Editar Comisión - {{ barbero.nombre }}</h2>
 
-<form method="POST">
-    {% csrf_token %}
+        {% if error %}
+            <div class="alert-message">{{ error }}</div>
+        {% endif %}
 
-    <label for="porcentaje">Porcentaje de Comisión:</label><br>
-    <input type="number" step="0.01" name="porcentaje" value="{{ comision.porcentaje }}"><br><br>
+        <form method="POST" class="service-form">
+            {% csrf_token %}
 
-    <input type="submit" value="Guardar">
-    <a href="{% url 'configurar_comisiones' %}">Cancelar</a>
-</form>
-{% include "inc/footer.html"%}
+            <div class="form-group">
+                <label for="porcentaje">Porcentaje de Comisión:</label>
+                <input type="number" step="0.01" name="porcentaje" id="porcentaje" value="{{ comision.porcentaje }}" required>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'configurar_comisiones' %}" class="btn-secondary">Cancelar</a>
+                <button type="submit" class="btn-gold">Guardar Comisión</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% include "inc/footer.html" %}

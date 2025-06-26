@@ -5,7 +5,7 @@
 
 {% include "inc/header.html" %}
 
-<div class="services-container">
+<div class="services-container" style="margin-top: 70px;">
     <div class="services-header">
         <h2>Servicios Disponibles</h2>
         <a href="{% url 'nuevo_servicio' %}" class="btn-gold">Agregar nuevo servicio</a>
@@ -31,7 +31,8 @@
                         <td>{{ servicio.duracion }} min</td>
                         <td class="text-center">
                             <a href="{% url 'editar_servicio' servicio.id %}" class="btn btn-sm btn-warning">Editar</a>
-                            <a href="{% url 'eliminar_servicio' servicio.id %}" class="btn btn-sm btn-dark" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                          <a href="#" class="btn btn-sm btn-dark eliminar-btn" data-url="{% url 'eliminar_servicio' servicio.id %}">Eliminar</a>
+
                         </td>
                     </tr>
                 {% empty %}
@@ -43,5 +44,38 @@
         </table>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const botonesEliminar = document.querySelectorAll('.eliminar-btn');
+
+    botonesEliminar.forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            const url = this.getAttribute('data-url');
+
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Esta acción no se puede deshacer.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#000',
+                cancelButtonColor: '#FFD700',
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+        });
+    });
+});
+</script>
+
+
 
 {% include "inc/footer.html" %}

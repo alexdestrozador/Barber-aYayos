@@ -1,42 +1,92 @@
 {% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil del Administrador</title>
+    <link rel="stylesheet" href="{% static 'Css/bootstrap.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .form-control[readonly] {
+            background-color: #f5f5f5;
+            border: none;
+            cursor: default;
+        }
+    </style>
+</head>
 
-<link rel="stylesheet" href="{% static 'Css/perfiles.css' %}">
-{% include 'inc/header.html' %}
-<div class="perfil-container">
-    <h2 class="perfil-title">👤 Mi Perfil Administrativo</h2>
+<body>
+{% include "inc/header.html" %}
 
-    <form method="post" enctype="multipart/form-data">
+<div class="container" style="margin-top: 90px;">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+</div>
+
+<div class="container mt-5 pt-3">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
+        <div class="row">
 
-        <div class="form-group">
-            <label for="nombre">Nombre completo:</label>
-            <input type="text" id="nombre" name="nombre" value="{{ user.nombre }}">
-        </div>
+            <!-- Perfil -->
+            <div class="col-md-4 text-center">
+                {% if form.instance.foto %}
+                    <img src="{{ form.instance.foto.url }}" class="img-thumbnail rounded-circle" width="200" height="200" alt="Avatar">
+                {% else %}
+                    <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" class="img-thumbnail rounded-circle" width="200" height="200" alt="Avatar">
+                {% endif %}
+                <h6 class="mt-2">Sube una nueva foto</h6>
+                {{ form.foto }}
+            </div>
 
-        <div class="form-group">
-            <label for="email">Correo electrónico:</label>
-            <input type="email" id="email" name="email" value="{{ user.email }}">
-        </div>
+            <!-- Datos -->
+            <div class="col-md-8">
+                <h3>Perfil del Administrador
+                    <button type="button" class="btn btn-sm btn-link" id="editar-btn">
+                        <i class="fas fa-pencil-alt"></i> Editar
+                    </button>
+                </h3>
+                <hr>
 
-        <div class="form-group">
-            <label for="telefono">Teléfono:</label>
-            <input type="tel" id="telefono" name="telefono" value="{{ user.telefono }}">
-        </div>
+                <div class="form-group">
+                    <label for="id_correo"><strong>Correo electrónico</strong></label>
+                    {{ form.correo }}
+                </div>
 
-        <div class="form-group">
-            <label for="foto">Foto de perfil:</label>
-            <input type="file" id="foto" name="foto">
-        </div>
+                <div class="form-group">
+                    <label for="id_password"><strong>Nueva contraseña</strong></label>
+                    <input type="password" name="password" id="id_password" class="form-control" placeholder="Nueva contraseña" readonly>
+                </div>
 
-        <div class="form-group">
-            <label for="password">Nueva contraseña:</label>
-            <input type="password" id="password" name="password">
-        </div>
+                <div class="form-group">
+                    <label for="id_password2"><strong>Confirmar contraseña</strong></label>
+                    <input type="password" name="password2" id="id_password2" class="form-control" placeholder="Confirmar contraseña" readonly>
+                </div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn-save">Guardar cambios</button>
+                <button type="submit" class="btn btn-success mt-3" id="guardar-btn" disabled>
+                    <i class="fa fa-save"></i> Guardar cambios
+                </button>
+            </div>
         </div>
     </form>
 </div>
 
+<script>
+    document.getElementById('editar-btn').addEventListener('click', function () {
+        const inputs = document.querySelectorAll('.form-control');
+        inputs.forEach(input => {
+            input.removeAttribute('readonly');
+        });
+        document.getElementById('guardar-btn').disabled = false;
+    });
+</script>
+
 {% include 'inc/footer.html' %}
+</body>
+</html>

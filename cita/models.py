@@ -1,12 +1,32 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+class AdminProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    foto = models.ImageField(upload_to='perfiles/', blank=True, null=True)
+    correo = models.EmailField(max_length=254, blank=True, null=True)  # EmailField en vez de CharField
+
+    def __str__(self):
+        return self.user.username
 
 class Cliente(models.Model):
+    ESTADOS = (
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo'),
+    )
+
+    username = models.CharField(max_length=30, unique=True)
     nombre = models.CharField(max_length=100)
+    correo = models.EmailField()
     telefono = models.CharField(max_length=15)
-    correo = models.EmailField(blank=True, null=True)
+    password = models.CharField(max_length=100)
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='activo')  # 👈 nuevo campo
+    activo = models.BooleanField(default=True) 
 
     def __str__(self):
         return self.nombre
+
+
 
     
 class Servicio(models.Model):
@@ -20,10 +40,15 @@ class Servicio(models.Model):
 
 
 class Barbero(models.Model):
-    nombre = models.CharField(max_length=30)
-    username = models.CharField(max_length=30, unique=True, default='usuario_temp')
-    telefono = models.CharField(max_length=20)
-    email = models.EmailField()
+    username = models.CharField(max_length=30, unique=True)
+    nombre = models.CharField(max_length=100)
+    correo = models.EmailField()
+    telefono = models.CharField(max_length=15)
+    password = models.CharField(max_length=100)
+    activo = models.BooleanField(default=True) 
+
+    def __str__(self):
+        return self.username
     
 class Cita(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)

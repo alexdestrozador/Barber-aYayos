@@ -1,10 +1,4 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
     <link rel="stylesheet" href="{% static 'Css/bootstrap.css'%}">
     <link rel="stylesheet" href="{% static 'Css/style.css'%}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -25,7 +19,7 @@
         <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">
-  <a href="{% url 'home' %}" class="text-decoration-none text-white">Yayo's Barber</a></h5>
+  <a href="#" class="text-decoration-none text-white">Yayo's Barber</a></h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
         
@@ -75,7 +69,7 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#">Clientes Registrados</a>
+                  <a class="nav-link" href="{% url 'lista_clientes' %}">Clientes Registrados</a>
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -109,13 +103,20 @@
           </a>
       
           <!-- Imagen de perfil con dropdown -->
-          <a href="#" class="d-block link-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="https://github.com/mdo.png" alt="Profile" width="32" height="32" class="rounded-circle">
-          </a>
+         <a href="#" class="d-block link-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    {% if request.user.adminprofile.foto %}
+        <img src="{{ request.user.adminprofile.foto.url }}" alt="Profile" width="32" height="32" class="rounded-circle">
+    {% else %}
+        <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" alt="Profile" width="32" height="32" class="rounded-circle">
+    {% endif %}
+    <span class="ms-2">{{ request.user.adminprofile.correo|default:request.user.email }}</span>
+</a>
+
           
           <ul class="dropdown-menu dropdown-menu-end text-small">
               
-              <li><a class="dropdown-item" href="#">Ajustes</a></li>
+              <li><a class="dropdown-item" href="{% url 'perfil_administrador' %}">Ajustes</a></li>
+
              
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="{% url 'landing' %}">Salir</a></li>
@@ -125,3 +126,22 @@
 
     </div>
 </nav>
+<script>
+// let timeout;
+
+// function resetTimer() {
+//     clearTimeout(timeout);
+//     timeout = setTimeout(() => {
+//         alert("Has estado inactivo durante 1 minuto. Se cerrará tu sesión.");
+//         window.location.href = "{% url 'logout' %}";
+//     }, 60000); // 60,000 ms = 1 minuto
+// }
+
+// // Eventos que reinician el contador de inactividad
+// ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(event => {
+//     window.addEventListener(event, resetTimer);
+// });
+
+// resetTimer(); // Inicializa el temporizador al cargar la página
+</script>
+
