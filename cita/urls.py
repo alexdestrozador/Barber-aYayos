@@ -21,6 +21,9 @@ urlpatterns = [
     path('citas/editar/<int:cita_id>/', views.editar_cita, name='editar_cita'),
     path('citas/eliminar/<int:cita_id>/', views.eliminar_cita, name='eliminar_cita'),
 
+    # 👥 Perfil cliente
+    path('mi-cuenta/', views.perfil_cliente, name='perfil_cliente'),
+
     # ✂️ Servicios
     path('servicios/', views.lista_servicios, name='lista_servicios'),
     path('servicios/nuevo/', views.nuevo_servicio, name='nuevo_servicio'),
@@ -47,6 +50,9 @@ urlpatterns = [
     path('barberos/', views.lista_barberos, name='lista_barberos'),
     path('barberos/editar/<int:barbero_id>/', views.editar_barbero, name='editar_barbero'),
     path('barberos/eliminar/<int:barbero_id>/', views.eliminar_barbero, name='eliminar_barbero'),
+
+    # 📅 Agendarcita 
+    path('agendar/', views.agendar_cita, name='agendar_cita'), 
 
     # 👥 Clientes
     path('admin_clientes/', views.lista_clientes, name='lista_clientes'),

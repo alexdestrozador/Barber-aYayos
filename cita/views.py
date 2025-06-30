@@ -11,6 +11,12 @@ from .forms import PerfilAdminForm
 from .models import AdminProfile
 from django.utils.dateparse import parse_datetime
 from datetime import timedelta
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from django.core.serializers.json import DjangoJSONEncoder
+from datetime import datetime, date, time
+import json
+
 
 def solo_superuser(usuario):
     return usuario.is_superuser
@@ -41,26 +47,33 @@ def perfil_administrador(request):
             return redirect('perfil_administrador')
         else:
             messages.error(request, 'Por favor corrige los errores.')
-
     else:
         form = PerfilAdminForm(instance=perfil)
 
     return render(request, 'perfil/perfil_administrador.html', {'form': form})
 
+
 @user_passes_test(solo_superuser, login_url="/")
 def panel_admin(request):
-    if not request.user.is_superuser:
-        return redirect('login')
     return render(request, 'Home/home.html')
+
 
 def index(request):
     return render(request, 'Landing/index.html')
 
 def home(request):
-    return render(request, 'Home/home.html') # o 'home/home.html' según la estructura
+    return render(request, 'Home/home.html')
 
-def quienesomos(request):
-    return render(request, 'paginas/quienesomos.html')
+def quienes_somos(request):
+    seccion, _ = QuienesSomos.objects.get_or_create(id=1)
+
+    if request.method == 'POST':
+        seccion.titulo = request.POST.get('titulo')
+        seccion.descripcion = request.POST.get('descripcion')
+        seccion.save()
+        return redirect('index')
+
+    return render(request, 'paginas/quienes_somos.html', {'seccion': seccion})
 
 def contacto(request):
     return render(request, 'paginas/contacto.html')
@@ -70,32 +83,34 @@ def login_view(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        # Verificamos Barbero
-        barbero = Barbero.objects.filter(username=username).first()
-        if barbero and check_password(password, barbero.password):
-            if not barbero.activo:
-                messages.error(request, "Cuenta inactiva.")
-                return redirect('login')
-            request.session['usuario'] = barbero.username
-            request.session['tipo'] = 'barbero'
-            return redirect('panel_barbero')
-
-        # Verificamos Cliente
-        cliente = Cliente.objects.filter(username=username).first()
-        if cliente and check_password(password, cliente.password):
-            if not cliente.activo:
-                messages.error(request, "Cuenta inactiva.")
-                return redirect('login')
-            request.session['usuario'] = cliente.username
-            request.session['tipo'] = 'cliente'
-            return redirect('panel_cliente')
-
-        # Verificamos Admin por superusuario
-        from django.contrib.auth import authenticate, login
         user = authenticate(request, username=username, password=password)
-        if user and user.is_superuser:
-            login(request, user)  # Django maneja la sesión
-            return redirect('panel_admin') 
+        if user:
+            login(request, user)
+
+            try:
+                barbero = Barbero.objects.get(user=user)
+                if not barbero.activo:
+                    messages.error(request, "Cuenta inactiva.")
+                    return redirect('login')
+                request.session['usuario'] = barbero.user.username
+                request.session['tipo'] = 'barbero'
+                return redirect('panel_barbero')
+            except Barbero.DoesNotExist:
+                pass
+
+            try:
+                cliente = Cliente.objects.get(user=user)
+                if not cliente.activo:
+                    messages.error(request, "Cuenta inactiva.")
+                    return redirect('login')
+                request.session['usuario'] = cliente.user.username
+                request.session['tipo'] = 'cliente'
+                return redirect('perfil_cliente')
+            except Cliente.DoesNotExist:
+                pass
+
+            if user.is_superuser:
+                return redirect('panel_admin')
 
         messages.error(request, "Credenciales inválidas")
     return render(request, 'Landing/login.html')
@@ -108,22 +123,26 @@ def registro_cliente(request):
         telefono = request.POST.get('telefono')
         password = request.POST.get('password')
 
-        if Cliente.objects.filter(username=username).exists() or Barbero.objects.filter(username=username).exists():
+        if User.objects.filter(username=username).exists():
             messages.error(request, "El nombre de usuario ya está registrado.")
             return redirect('login')
 
-        Cliente.objects.create(
+        user = User.objects.create_user(
             username=username,
-            nombre=nombre,
-            correo=correo,
-            telefono=telefono,
-            password=make_password(password)  # ← aquí se encripta
+            password=password,
+            email=correo,
+            first_name=nombre
         )
+
+        Cliente.objects.create(
+            user=user,
+            telefono=telefono
+        )
+
         messages.success(request, "Registro exitoso. Ahora puedes iniciar sesión.")
         return redirect('login')
 
     return render(request, 'Landing/login.html')
-
 
 
 def lista_clientes(request):
@@ -373,25 +392,33 @@ def nuevo_barbero(request):
         nombre = request.POST.get('nombre', '').strip()
         username = request.POST.get('username', '').strip()
         telefono = request.POST.get('telefono', '').strip()
-        correo = request.POST.get('email', '').strip()  # 🔧 corrección aquí
+        correo = request.POST.get('email', '').strip()
         password_raw = request.POST.get('password', '').strip()
 
         if nombre and username and telefono and correo and password_raw:
-            if Barbero.objects.filter(username__iexact=username).exists():
+            if User.objects.filter(username=username).exists():
                 return render(request, 'admin_barbero/nuevo_barbero.html', {
                     'error': 'El nombre de usuario ya está en uso.',
                     'form_data': request.POST
                 })
 
             try:
-                Barbero.objects.create(
-                    nombre=nombre,
+                # Crear el usuario
+                user = User.objects.create_user(
                     username=username,
-                    telefono=telefono,
-                    correo=correo,
-                    password=make_password(password_raw)
+                    password=password_raw,
+                    email=correo,
+                    first_name=nombre
                 )
+
+                # Crear el barbero y asociarlo al usuario
+                Barbero.objects.create(
+                    user=user,
+                    telefono=telefono
+                )
+
                 return redirect('lista_barberos')
+
             except Exception as e:
                 return render(request, 'admin_barbero/nuevo_barbero.html', {
                     'error': str(e),
@@ -410,9 +437,10 @@ def verificar_username_barbero(request):
     barbero_id = request.GET.get('barbero_id')
 
     if barbero_id:
-        existe = Barbero.objects.filter(username__iexact=username).exclude(id=barbero_id).exists()
+        barbero = get_object_or_404(Barbero, id=barbero_id)
+        existe = User.objects.filter(username__iexact=username).exclude(id=barbero.user.id).exists()
     else:
-        existe = Barbero.objects.filter(username__iexact=username).exists()
+        existe = User.objects.filter(username__iexact=username).exists()
 
     return JsonResponse({'existe': existe})
 
@@ -422,6 +450,7 @@ def lista_barberos(request):
 
 def editar_barbero(request, barbero_id):
     barbero = get_object_or_404(Barbero, id=barbero_id)
+    user = barbero.user
 
     if request.method == 'POST':
         nombre = request.POST.get('nombre', '').strip()
@@ -430,22 +459,26 @@ def editar_barbero(request, barbero_id):
         email = request.POST.get('email', '').strip()
 
         if nombre and username and telefono and email:
-            # Validar que el username no se repita (excepto el suyo mismo)
-            if Barbero.objects.filter(username__iexact=username).exclude(id=barbero.id).exists():
-                error_msg = "El nombre de usuario ya está en uso. Elige otro."
+            # Validar que el username no se repita (excepto el suyo)
+            if User.objects.filter(username__iexact=username).exclude(id=user.id).exists():
                 return render(request, 'admin_barbero/editar_barbero.html', {
                     'barbero': barbero,
-                    'error': error_msg
+                    'error': 'El nombre de usuario ya está en uso.'
                 })
 
             try:
-                barbero.nombre = nombre
-                barbero.username = username
+                # Actualizar datos del usuario
+                user.first_name = nombre
+                user.username = username
+                user.email = email
+                user.save()
+
+                # Actualizar teléfono del barbero
                 barbero.telefono = telefono
-                barbero.correo = email
-                # No se toca barbero.password → se conserva
                 barbero.save()
+
                 return redirect('lista_barberos')
+
             except Exception as e:
                 return render(request, 'admin_barbero/editar_barbero.html', {
                     'barbero': barbero,
@@ -601,3 +634,97 @@ def editar_comision(request, barbero_id):
         'barbero': barbero,
         'comision': comision
     })
+
+
+    #modelcliente
+    
+@login_required
+def perfil_cliente(request):
+    try:
+        cliente = Cliente.objects.get(user=request.user)
+        citas = Cita.objects.filter(cliente=cliente).select_related('servicio')
+    except Cliente.DoesNotExist:
+        cliente = None
+        citas = []
+
+    return render(request, 'cliente/perfil_cliente.html', {
+        'cliente': cliente,
+        'citas': citas,
+    })
+
+#AGENDAR CITA 
+
+@login_required
+def agendar_cita(request):
+    try:
+        cliente = Cliente.objects.get(user=request.user)
+    except Cliente.DoesNotExist:
+        return render(request, "cliente/agendar_cita.html", {
+            "error": "No estás registrado como cliente.",
+            "barberos": Barbero.objects.all(),
+            "servicios": Servicio.objects.all(),
+            "horarios_json": "{}"
+        })
+
+    if request.method == "POST":
+        try:
+            hora_str = request.POST.get("fecha_hora")  # Ej: "06:17"
+            servicio_id = request.POST.get("servicio")
+            barbero_id = request.POST.get("barbero")
+            estado = request.POST.get("estado", "pendiente")
+
+            # Validaciones
+            if not hora_str or not servicio_id or not barbero_id:
+                raise ValueError("Todos los campos obligatorios deben estar completos.")
+
+            # Parseo
+            hora_obj = datetime.strptime(hora_str, "%H:%M").time()
+            fecha_actual = date.today()
+            fecha_hora = datetime.combine(fecha_actual, hora_obj)
+
+            servicio = Servicio.objects.get(id=servicio_id)
+            barbero = Barbero.objects.get(id=barbero_id)
+
+            Cita.objects.create(
+                cliente=cliente,
+                barbero=barbero,
+                fecha_hora=fecha_hora,
+                servicio=servicio,
+                estado=estado
+            )
+
+            return redirect("perfil_cliente")
+
+        except Exception as e:
+            horarios_json = _generar_horarios_json()
+            return render(request, "cliente/agendar_cita.html", {
+                "error": str(e),
+                "barberos": Barbero.objects.all(),
+                "servicios": Servicio.objects.all(),
+                "horarios_json": horarios_json
+            })
+
+    # GET: Enviar horarios como JSON
+    horarios_json = _generar_horarios_json()
+
+    return render(request, "cliente/agendar_cita.html", {
+        "barberos": Barbero.objects.all(),
+        "servicios": Servicio.objects.all(),
+        "horarios_json": horarios_json
+    })
+
+
+def _generar_horarios_json():
+    horarios_por_barbero = {}
+
+    for horario in Horario.objects.all():
+        barbero_id = str(horario.barbero.id)
+        if barbero_id not in horarios_por_barbero:
+            horarios_por_barbero[barbero_id] = []
+
+        horario_str = f"{horario.dia} - {horario.hora_inicio.strftime('%H:%M')}"
+
+        if horario_str not in horarios_por_barbero[barbero_id]:
+            horarios_por_barbero[barbero_id].append(horario_str)
+
+    return json.dumps(horarios_por_barbero, cls=DjangoJSONEncoder)

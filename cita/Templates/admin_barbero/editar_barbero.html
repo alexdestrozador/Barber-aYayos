@@ -1,63 +1,62 @@
 {% load static %}
 
-    
-    <link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+<link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
 
-    {% include "inc/header.html" %}
+{% include "inc/header.html" %}
 
-    <div class="form-wrapper"> 
-        <div class="form-card">
-            <h2 class="form-title">Editar Barbero</h2>
+<div class="form-wrapper"> 
+    <div class="form-card">
+        <h2 class="form-title">Editar Barbero</h2>
 
-            {% if error %}
-                <div class="alert-message">{{ error }}</div>
-            {% endif %}
+        {% if error %}
+            <div class="alert-message">{{ error }}</div>
+        {% endif %}
 
-            <form method="POST" class="service-form" id="form-barbero">
-                {% csrf_token %}
-                <input type="hidden" id="barbero_id" name="barbero_id" value="{{ barbero.id }}">
+        <form method="POST" class="service-form" id="form-barbero">
+            {% csrf_token %}
+            <input type="hidden" id="barbero_id" name="barbero_id" value="{{ barbero.id }}">
 
-                <div class="form-group">
-                    <label for="nombre">Nombre de barbero *</label>
-                    <input type="text" name="nombre" id="nombre" maxlength="30" required onblur="validarCampo(this)" value="{{ barbero.nombre }}">
-                    <p id="error-nombre" style="display:none; color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
-                        Llena este campo. ¡Es obligatorio!
-                    </p>
-                </div>
+            <div class="form-group">
+                <label for="nombre">Nombre de barbero *</label>
+                <input type="text" name="nombre" id="nombre" maxlength="30" required onblur="validarCampo(this)" value="{{ barbero.user.first_name }}">
+                <p id="error-nombre" style="display:none; color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
+                    Llena este campo. ¡Es obligatorio!
+                </p>
+            </div>
 
-                <div class="form-group">
-                    <label for="username">Nombre de Usuario *</label>
-                    <input type="text" name="username" id="username" maxlength="30" required onblur="validarCampo(this); validarUsernameUnico();" value="{{ barbero.username }}">
-                    <p id="error-username" style="display:none; color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
-                        Llena este campo. ¡Es obligatorio y debe ser único!
-                    </p>
-                </div>
+            <div class="form-group">
+                <label for="username">Nombre de Usuario *</label>
+                <input type="text" name="username" id="username" maxlength="30" required onblur="validarCampo(this); validarUsernameUnico();" value="{{ barbero.user.username }}">
+                <p id="error-username" style="display:none; color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
+                    Llena este campo. ¡Es obligatorio y debe ser único!
+                </p>
+            </div>
 
-                <div class="form-group">
-                    <label for="telefono">Número de teléfono *</label>
-                    <input type="number" name="telefono" id="telefono" required onblur="validarCampo(this)" value="{{ barbero.telefono }}">
-                    <p id="error-telefono" style="display:none; color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
-                        Ingresa un número válido con al menos 7 dígitos.
-                    </p>
-                </div>
+            <div class="form-group">
+                <label for="telefono">Número de teléfono *</label>
+                <input type="number" name="telefono" id="telefono" required onblur="validarCampo(this)" value="{{ barbero.telefono }}">
+                <p id="error-telefono" style="display:none; color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
+                    Ingresa un número válido con al menos 7 dígitos.
+                </p>
+            </div>
 
-                <div class="form-group">
-                    <label for="email">Correo Electrónico *</label>
-                    <input type="email" name="email" id="email" required onblur="validarCampo(this)" value="{{ barbero.email }}">
-                    <p id="error-email" style="display:none; color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
-                        Ingresa un correo electrónico válido.
-                    </p>
-                </div>
+            <div class="form-group">
+                <label for="email">Correo Electrónico *</label>
+                <input type="email" name="email" id="email" required onblur="validarCampo(this)" value="{{ barbero.user.email }}">
+                <p id="error-email" style="display:none; color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
+                    Ingresa un correo electrónico válido.
+                </p>
+            </div>
 
-                <div class="form-actions">
-                    <a href="{% url 'lista_barberos' %}" class="btn-secondary">Volver</a>
-                    <button type="submit" class="btn-gold">Actualizar Barbero</button>
-                </div>
-            </form>
-        </div>
+            <div class="form-actions">
+                <a href="{% url 'lista_barberos' %}" class="btn-secondary">Volver</a>
+                <button type="submit" class="btn-gold">Actualizar Barbero</button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
     function validarCampo(input) {
@@ -111,7 +110,7 @@
         }
 
         try {
-            const response = await fetch(`/barberos/verificar-username/?username=${encodeURIComponent(username)}&exclude_id=${barberoId}`);
+            const response = await fetch(`/barberos/verificar-username/?username=${encodeURIComponent(username)}&barbero_id=${barberoId}`);
             const data = await response.json();
 
             if (data.existe) {

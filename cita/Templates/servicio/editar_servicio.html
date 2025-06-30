@@ -5,44 +5,45 @@
     <meta charset="UTF-8">
     <title>Editar Servicio</title>
     <link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+    <link rel="stylesheet" href="{% static 'Css/bootstrap.css' %}">
 </head>
 <body>
     {% include "inc/header.html" %}
 
-    <div class="form-wrapper">
-        <div class="form-card">
-            <h2 class="form-title">Editar Servicio</h2>
+    <div class="container py-5">
+        <div class="card p-4 shadow">
+            <h2 class="mb-4 text-center text-gold">Editar Servicio</h2>
 
             {% if error %}
-                <div class="alert-message">{{ error }}</div>
+                <div class="alert alert-danger">{{ error }}</div>
             {% endif %}
 
-            <form method="POST" class="service-form">
+            <form method="POST">
                 {% csrf_token %}
 
-                <div class="form-group">
-                    <label for="nombre">Nombre:</label>
-                    <input type="text" name="nombre" id="nombre" value="{{ servicio.nombre }}" required>
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre:</label>
+                    <input type="text" name="nombre" id="nombre" class="form-control" value="{{ servicio.nombre }}" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="descripcion">Descripción:</label>
-                    <input type="text" name="descripcion" id="descripcion" value="{{ servicio.descripcion }}" required>
+                <div class="mb-3">
+                    <label for="descripcion" class="form-label">Descripción:</label>
+                    <input type="text" name="descripcion" id="descripcion" class="form-control" value="{{ servicio.descripcion }}" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="precio">Precio:</label>
-                    <input type="number" step="0.01" name="precio" id="precio" value="{{ servicio.precio }}" required>
+                <div class="mb-3">
+                    <label for="precio" class="form-label">Precio:</label>
+                    <input type="number" step="0.01" name="precio" id="precio" class="form-control" value="{{ servicio.precio }}" required>
                 </div>
 
-                <div class="form-group">
-                    <label for="duracion">Duración (minutos):</label>
-                    <input type="number" name="duracion" id="duracion" value="{{ servicio.duracion }}" required>
+                <div class="mb-3">
+                    <label for="duracion" class="form-label">Duración (minutos):</label>
+                    <input type="number" name="duracion" id="duracion" class="form-control" value="{{ servicio.duracion }}" required>
                 </div>
 
-                <div class="form-actions">
-                    <a href="{% url 'lista_servicios' %}" class="btn-secondary">Volver</a>
-                    <button type="submit" class="btn-gold">Actualizar Servicio</button>
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'lista_servicios' %}" class="btn btn-secondary">Volver</a>
+                    <button type="submit" class="btn btn-warning text-white">Actualizar Servicio</button>
                 </div>
             </form>
         </div>

@@ -1,10 +1,9 @@
 {% load static %}
 
-
 <link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
 
 {% include "inc/header.html" %}
-<div class="services-container"  style="margin-top: 70px">
+<div class="services-container" style="margin-top: 70px">
     <div class="services-header">
         <h2>Lista de Barberos</h2>
         <a href="{% url 'nuevo_barbero' %}" class="btn-gold">Agregar Barbero</a>
@@ -18,23 +17,19 @@
                     <th>Nombre de Usuario</th>
                     <th>Teléfono</th>
                     <th>Email</th>
-                    
-
                     <th class="text-center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 {% for barbero in barberos %}
                     <tr>
-                        <td>{{ barbero.nombre }}</td>
-                        <td>{{barbero.username}}</td>
+                        <td>{{ barbero.user.first_name }}</td>
+                        <td>{{ barbero.user.username }}</td>
                         <td>{{ barbero.telefono }}</td>
-                        <td>{{ barbero.correo }}</td>
-                        
+                        <td>{{ barbero.user.email }}</td>
                         <td class="text-center">
                             <a href="{% url 'editar_barbero' barbero.id %}" class="btn btn-sm btn-warning">Editar</a>
-                           <a href="#" class="btn btn-sm btn-dark eliminar-btn" data-id="{{ barbero.id }}">Eliminar</a>
-
+                            <a href="#" class="btn btn-sm btn-dark eliminar-btn" data-id="{{ barbero.id }}">Eliminar</a>
                         </td>
                     </tr>
                 {% empty %}
@@ -46,15 +41,15 @@
         </table>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const botonesEliminar = document.querySelectorAll('.eliminar-btn');
 
     botonesEliminar.forEach(btn => {
         btn.addEventListener('click', function (e) {
-            e.preventDefault(); // Evita que redireccione
+            e.preventDefault();
 
             const barberoId = this.getAttribute('data-id');
 
@@ -69,7 +64,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Redirecciona manualmente a la URL de eliminación
                     window.location.href = `/barberos/eliminar/${barberoId}/`;
                 }
             });
@@ -79,5 +73,3 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 {% include "inc/footer.html" %}
-
-

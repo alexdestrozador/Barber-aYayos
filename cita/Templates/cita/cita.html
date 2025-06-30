@@ -1,14 +1,33 @@
 <form method="POST" action="{% url 'crear_cita' %}">
     {% csrf_token %}
-    <input type="text" name="cliente" placeholder="Cliente" required>
-    <input type="datetime-local" name="fecha_hora" required>
-    
-    <select name="servicio" required>
+
+    <!-- Cliente (nombre solo lectura si el cliente ya está logueado) -->
+    {% if user.is_authenticated %}
+        <input type="text" name="cliente" value="{{ user.get_full_name }}" readonly>
+    {% else %}
+        <input type="text" name="cliente" placeholder="Nombre del Cliente" required>
+    {% endif %}
+
+    <!-- Fecha y hora de la cita -->
+    <label for="fecha_hora">Fecha y Hora *</label>
+    <input type="datetime-local" name="fecha_hora" id="fecha_hora" required>
+
+    <!-- Servicios disponibles -->
+    <label for="servicio">Servicio *</label>
+    <select name="servicio" id="servicio" required>
+        <option value="" disabled selected>Selecciona un servicio</option>
         {% for servicio in servicios %}
             <option value="{{ servicio.id }}">{{ servicio.nombre }}</option>
         {% endfor %}
     </select>
 
-    <input type="text" name="estado" placeholder="Estado" required>
+    <!-- Estado de la cita (opcional, puede ser oculto si lo controlas desde la vista) -->
+    <label for="estado">Estado *</label>
+    <select name="estado" id="estado" required>
+        <option value="pendiente">Pendiente</option>
+        <option value="confirmada">Confirmada</option>
+        <option value="cancelada">Cancelada</option>
+    </select>
+
     <button type="submit">Guardar</button>
 </form>

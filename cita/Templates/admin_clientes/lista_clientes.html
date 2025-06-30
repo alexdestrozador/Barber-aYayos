@@ -1,6 +1,5 @@
 {% load static %}
 
-
 <link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
 
 {% include "inc/header.html" %}
@@ -25,10 +24,10 @@
             <tbody>
                 {% for cliente in clientes %}
                     <tr>
-                        <td>{{ cliente.nombre }}</td>
-                        <td>{{ cliente.username }}</td>
+                        <td>{{ cliente.user.first_name }}</td>
+                        <td>{{ cliente.user.username }}</td>
                         <td>{{ cliente.telefono }}</td>
-                        <td>{{ cliente.correo }}</td>
+                        <td>{{ cliente.user.email }}</td>
                         <td>
                             {% if cliente.estado == "activo" %}
                                 <span style="color: rgb(160, 148, 10);">Activo</span>
@@ -40,7 +39,6 @@
                             <a href="{% url 'cambiar_estado_cliente' cliente.id %}" class="btn btn-sm btn-warning">
                                 {% if cliente.estado == "activo" %} Desactivar {% else %} Activar {% endif %}
                             </a>
-                            <!-- Puedes agregar también editar o eliminar si quieres -->
                         </td>
                     </tr>
                 {% empty %}
