@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'yayos_barber.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://yayos_user:JSMMxVzSOYEPhylUVx2t7ImAcr0OELHq@dpg-d1j1olfdiees73ch7gag-a/yayos_barber', 
+        default='postgresql://yayos_user:JSMMxVzSOYEPhylUVx2t7ImAcr0OELHq@dpg-d1j1olfdiees73ch7gag-a.render.com/yayos_barber',
         conn_max_age=600,
         conn_health_checks=True,
     )
