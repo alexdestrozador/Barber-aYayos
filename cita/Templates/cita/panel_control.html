@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Control</title>
+
+    <!-- Bootstrap 5 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    
+    <!-- Lucide Icons (reemplaza si usas Bootstrap Icons) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Estilos personalizados -->
+    <link rel="stylesheet" href="{% static 'Css/panel.css' %}">
+</head>
+<body>
+
+    {% include "inc/header.html" %}
+
+    <div class="container-fluid pt-5 mt-4">
+        <div class="row g-4">
+
+            <!-- Barberos -->
+            <div class="col-md-4">
+                <div class="card-box bg-orange text-white text-center p-4 rounded shadow-sm">
+                    <div class="icon mb-2"><i data-lucide="users"></i></div>
+                    <h5>Barberos Registrados</h5>
+                    <p>{{ num_barberos }}</p>
+                    <a href="{% url 'lista_barberos' %}" class="btn btn-outline-light mt-2">Ver Barberos</a>
+                </div>
+            </div>
+
+            <!-- Servicios -->
+            <div class="col-md-4">
+                <div class="card-box bg-dark text-white text-center p-4 rounded shadow-sm">
+                    <div class="icon mb-2"><i data-lucide="scissors"></i></div>
+                    <h5>Servicios</h5>
+                    <p>{{ num_servicios }}</p>
+                    <a href="{% url 'lista_servicios' %}" class="btn btn-outline-light mt-2">Ver Servicios</a>
+                </div>
+            </div>
+
+            <!-- Citas -->
+            <div class="col-md-4">
+                <div class="card-box bg-primary text-white text-center p-4 rounded shadow-sm">
+                    <div class="icon mb-2"><i data-lucide="calendar-clock"></i></div>
+                    <h5>Citas Programadas</h5>
+                    <p>{{ num_citas }}</p>
+                    <a href="{% url 'lista_citas' %}" class="btn btn-outline-light mt-2">Ver Citas</a>
+                </div>
+            </div>
+
+            <!-- Clientes -->
+            <div class="col-md-4">
+                <div class="card-box bg-success text-white text-center p-4 rounded shadow-sm">
+                    <div class="icon mb-2"><i data-lucide="user-check"></i></div>
+                    <h5>Usuarios Registrados</h5>
+                    <p>{{ num_clientes }}</p>
+                    <a href="{% url 'lista_clientes' %}" class="btn btn-outline-light mt-2">Ver Usuarios</a>
+                </div>
+            </div>
+
+            <!-- Pagos -->
+            <div class="col-md-4">
+                <div class="card-box bg-danger text-white text-center p-4 rounded shadow-sm">
+                    <div class="icon mb-2"><i data-lucide="dollar-sign"></i></div>
+                    <h5>Pagos</h5>
+                    <p>{{ num_pagos }}</p>
+                    <a href="{% url 'pagos' %}" class="btn btn-outline-light mt-2">Ver Pagos</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Activar íconos Lucide -->
+    <script>
+        lucide.createIcons();
+    </script>
+
+    {% include "inc/footer.html" %}
+</body>
+</html>

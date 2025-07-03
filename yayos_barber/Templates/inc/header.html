@@ -1,0 +1,147 @@
+{% load static %}
+    <link rel="stylesheet" href="{% static 'Css/bootstrap.css'%}">
+    <link rel="stylesheet" href="{% static 'Css/style.css'%}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+
+    <title>Yayo's Barber</title>
+  </head>
+  <body>
+   <!-- Navbar -->
+   <nav class="navbar navbar-dark bg-dark fixed-top">
+    <div class="container-fluid d-flex align-items-center">
+        
+        <!-- Botón para abrir el Offcanvas -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menú Offcanvas -->
+        <div class="offcanvas offcanvas-start text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">
+  <a href="#" class="text-decoration-none text-white">Yayo's Barber</a></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+        
+            <div class="offcanvas-body">
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'panel_control' %}">Panel de control</a>
+                </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Servicios
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="{% url 'nuevo_servicio' %}">Agregar servicio</a></li>
+                        <li><a class="dropdown-item" href="{% url 'lista_servicios' %}">Administrar servicio</a></li>
+                    </ul>
+                </li>
+                   
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Ajuste de Páginas
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a class="dropdown-item" href="{% url 'quienes_somos' %}">Quienes somos</a></li>
+                            <li><a class="dropdown-item" href="{% url 'contacto' %}">Contacto</a></li>
+                            <li><a class="dropdown-item" href="#">Horario</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Citas
+                      </a>
+                      <ul class="dropdown-menu dropdown-menu-dark">
+                          <li><a class="dropdown-item" href="#">Todas las citas</a></li>
+                          <li><a class="dropdown-item" href="#">Citas Aceptadas</a></li>
+                          <li><a class="dropdown-item" href="#">Citas Rechazadas</a></li>
+                      </ul>
+                  </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Barberos
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="{% url 'nuevo_barbero' %}">Agregar Barbero</a></li>
+                        <li><a class="dropdown-item" href="{% url 'lista_barberos' %}">Lista de Barberos</a></li>
+                        <li><a class="dropdown-item" href="{% url 'nuevo_horario' %}">Horario de Barberos</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'lista_clientes' %}">Clientes Registrados</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    📊 Finanzas
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item" href="{% url 'reporte_ingresos' %}">📈 Reportes de ingresos</a></li>
+                    <li><a class="dropdown-item" href="{% url 'ingresos_barbero' %}">👥 Ingresos por barbero</a></li>
+                    <li><a class="dropdown-item" href="{% url 'pagos' %}">💰 Pagos</a></li>
+                    <li><a class="dropdown-item" href="{% url 'configurar_comisiones' %}">⚙️ Configurar comisiones</a></li>
+                </ul>
+            </li>
+            
+            
+                </ul>
+
+                <!-- Barra de búsqueda -->
+            
+            </div>
+        </div>
+
+        <!-- Dropdown a la derecha -->
+        <div class="dropdown d-flex align-items-center ms-auto">
+          <!-- Campana de notificaciones -->
+          <a href="#" class="text-light me-3 position-relative">
+              <i class="bi bi-bell fs-4"></i> <!-- Icono de campana -->
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  3
+                  <span class="visually-hidden">unread messages</span>
+              </span>
+          </a>
+      
+          <!-- Imagen de perfil con dropdown -->
+         <a href="#" class="d-block link-light text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+    {% if request.user.adminprofile.foto %}
+        <img src="{{ request.user.adminprofile.foto.url }}" alt="Profile" width="32" height="32" class="rounded-circle">
+    {% else %}
+        <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" alt="Profile" width="32" height="32" class="rounded-circle">
+    {% endif %}
+    <span class="ms-2">{{ request.user.adminprofile.correo|default:request.user.email }}</span>
+</a>
+
+          
+          <ul class="dropdown-menu dropdown-menu-end text-small">
+              
+              <li><a class="dropdown-item" href="{% url 'perfil_administrador' %}">Ajustes</a></li>
+
+             
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'landing' %}">Salir</a></li>
+          </ul>
+      </div>
+      
+
+    </div>
+</nav>
+<script>
+// let timeout;
+
+// function resetTimer() {
+//     clearTimeout(timeout);
+//     timeout = setTimeout(() => {
+//         alert("Has estado inactivo durante 1 minuto. Se cerrará tu sesión.");
+//         window.location.href = "{% url 'logout' %}";
+//     }, 60000); // 60,000 ms = 1 minuto
+// }
+
+// // Eventos que reinician el contador de inactividad
+// ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(event => {
+//     window.addEventListener(event, resetTimer);
+// });
+
+// resetTimer(); // Inicializa el temporizador al cargar la página
+</script>
+

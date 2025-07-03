@@ -1,0 +1,53 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+
+{% include "inc/header.html" %}
+
+<div class="form-wrapper">
+    <div class="form-card">
+        <h2 class="form-title"> Ingresos por Barbero</h2>
+
+        <form method="get" class="service-form">
+            <div class="form-group">
+                <label for="fecha_inicio">Desde:</label>
+                <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ fecha_inicio }}">
+            </div>
+            <div class="form-group">
+                <label for="fecha_fin">Hasta:</label>
+                <input type="date" name="fecha_fin" id="fecha_fin" value="{{ fecha_fin }}">
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn-gold">Filtrar</button>
+                <a href="{% url 'home' %}" class="btn-secondary">Volver al inicio</a>
+            </div>
+        </form>
+
+        <div class="table-container mt-4">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Total generado</th>
+                        <th>Comisión (%)</th>
+                        <th>Pago al barbero</th>
+                        <th>Ingreso para la barbería</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in datos %}
+                    <tr>
+                        <td>{{ item.barbero.nombre }}</td>
+                        <td>${{ item.total }}</td>
+                        <td>{{ item.comision }}%</td>
+                        <td>${{ item.pago_barbero }}</td>
+                        <td>${{ item.ingreso_barberia }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% include "inc/footer.html" %}

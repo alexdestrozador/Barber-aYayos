@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Agendar Cita</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'Css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'Css/agendar_cita.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+
+<body>
+
+    <div class="formulario">
+        <h2 class="tex1">Agendar Cita</h2>
+
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'agendar_cita' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Barbero -->
+            <label for="barbero">Barbero:</label>
+            <select id="barbero" name="barbero" required onchange="mostrarHorarios()">
+                <option value="">Selecciona un barbero</option>
+                {% for barbero in barberos %}
+                <option value="{{ barbero.id }}">{{ barbero.user.get_full_name }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Horario -->
+            <label for="horario">Horario:</label>
+            <select id="horario" name="fecha_hora" required>
+                <option value="">Selecciona un horario</option>
+            </select>
+
+            <!-- Nombre y Apellido -->
+            <div class="row">
+                <div>
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" required value="{{ request.POST.nombre|default:'' }}">
+                </div>
+                <div>
+                    <label for="apellido">Apellido:</label>
+                    <input type="text" id="apellido" name="apellido" required
+                        value="{{ request.POST.apellido|default:'' }}">
+                </div>
+            </div>
+
+            <!-- Correo -->
+            <label for="correo">Correo Electrónico:</label>
+            <input type="email" id="correo" name="correo" required value="{{ request.POST.correo|default:'' }}">
+
+            <!-- Servicio -->
+            <label for="servicio">Servicio:</label>
+            <select id="servicio" name="servicio" required>
+                <option value="">Selecciona un servicio</option>
+                {% for servicio in servicios %}
+                <option value="{{ servicio.id }}">{{ servicio.nombre }}</option>
+                {% endfor %}
+            </select>
+
+            <!-- Sugerencia -->
+            <label for="sugerencia">Sugerencia de corte (opcional):</label>
+            <textarea id="sugerencia" name="sugerencia" rows="4"
+                placeholder="Describe cómo te gustaría el corte...">{{ request.POST.sugerencia|default:'' }}</textarea>
+
+            <!-- Imagen -->
+            <label for="imagen">Sube una imagen de referencia (opcional):</label>
+            <input type="file" id="imagen" name="imagen" accept="image/*">
+
+            <!-- Estado (oculto) -->
+            <input type="hidden" name="estado" value="pendiente">
+
+            <!-- Botón -->
+            <button type="submit" class="submit-btn">Agendar</button>
+        </form>
+    </div>
+
+    <!-- Script: Mostrar horarios dinámicamente por barbero -->
+    <script>
+        const horariosPorBarbero = JSON.parse('{{ horarios_json|escapejs }}');
+
+        function mostrarHorarios() {
+            const barberoId = document.getElementById("barbero").value;
+            const horarioSelect = document.getElementById("horario");
+
+            horarioSelect.innerHTML = '<option value="">Selecciona un horario</option>';
+
+            if (horariosPorBarbero[barberoId]) {
+                horariosPorBarbero[barberoId].forEach(horarioTexto => {
+                    const hora = horarioTexto.split(" - ")[1]; 
+                    const option = document.createElement("option");
+                    option.value = hora;             
+                    option.textContent = horarioTexto;
+                    horarioSelect.appendChild(option);
+                });
+            }
+        }
+    </script>
+
+    {% include "inc/footer.html" %}
+</body>
+
+</html>

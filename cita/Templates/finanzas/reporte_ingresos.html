@@ -1,0 +1,20 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+
+{% include "inc/header.html" %}
+
+<div class="form-wrapper">
+    <div class="form-card">
+        <h2 class="form-title"> Reporte General de Ingresos</h2>
+        <div class="form-group">
+            <p style="font-size: 1.2rem; color: #DAA520; font-weight: 600;">Total ingresos:</p>
+            <p style="font-size: 2rem; font-weight: bold; color: #4CAF50;">${{ total_ingresos }}</p>
+        </div>
+        <div class="form-actions">
+            <a href="{% url 'home' %}" class="btn-secondary">Volver al inicio</a>
+        </div>
+    </div>
+</div>
+
+{% include "inc/footer.html" %}
