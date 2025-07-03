@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+import dj_database_url  # <- Asegúrate de tenerlo en requirements.txt
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,9 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'cita',
-    
 ]
-
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -58,7 +58,7 @@ ROOT_URLCONF = 'yayos_barber.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ 'yayos_barber/Templates'],
+        'DIRS': ['yayos_barber/Templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,19 +78,12 @@ WSGI_APPLICATION = 'yayos_barber.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'yayos_barber',
-        'USER': 'root',
-        'PASSWORD': 'root',  # ← Aquí el cambio importante
-        'HOST': 'db',        # Este nombre debe coincidir con el servicio en docker-compose
-        'PORT': '3306',
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        }
-    }
+    'default': dj_database_url.config(
+        default='mysql://root:root@db:3306/yayos_barber',
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
-
 
 
 # Password validation
@@ -133,10 +126,9 @@ STATICFILES_DIRS = [
     'yayos_barber/Public'
 ]
 
-import os
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
