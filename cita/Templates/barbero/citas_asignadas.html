@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Citas Asignadas{% endblock %}
+
+{% block content %}
+<h2 class="subtitulo">Citas Asignadas</h2>
+
+{% if citas %}
+<ul class="lista-citas">
+  {% for cita in citas %}
+    <li class="cita-item">
+      <p><strong>Cliente:</strong> {{ cita.cliente.user.first_name }} {{ cita.cliente.user.last_name }}</p>
+      <p><strong>Servicio:</strong> {{ cita.servicio.nombre }}</p>
+      <p><strong>Fecha y Hora:</strong> {{ cita.fecha_hora|date:"d/m/Y H:i" }}</p>
+      <p><strong>Estado:</strong> <span class="estado-{{ cita.estado|lower }}">{{ cita.estado }}</span></p>
+
+      {% if cita.estado|lower == "pendiente" %}
+        <form action="{% url 'aceptar_cita' cita.id %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button class="btn-aceptar" type="submit">Aceptar</button>
+        </form>
+        <form action="{% url 'rechazar_cita' cita.id %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button class="btn-rechazar" type="submit">Rechazar</button>
+        </form>
+      {% endif %}
+
+      <form action="{% url 'eliminar_cita' cita.id %}" method="post" style="display:inline;" onsubmit="return confirm('¿Estás seguro de eliminar esta cita?');">
+        {% csrf_token %}
+        <button class="btn-eliminar" type="submit">Eliminar</button>
+      </form>
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+  <p>No tienes citas asignadas por ahora.</p>
+{% endif %}
+
+<a href="{% url 'panel_barbero' %}" class="btn-volver">← Volver al panel principal</a>
+
+<style>
+.lista-citas {
+  list-style: none;
+  padding: 0;
+}
+
+.cita-item {
+  background: #fff8dc;
+  border: 2px solid #FFD700;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.estado-pendiente {
+  color: #ff9900;
+  font-weight: bold;
+}
+
+.estado-aceptada {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.estado-rechazada {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.btn-aceptar, .btn-rechazar, .btn-eliminar {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.btn-aceptar {
+  background-color: #28a745;
+  color: white;
+}
+.btn-aceptar:hover {
+  background-color: #218838;
+}
+
+.btn-rechazar {
+  background-color: #dc3545;
+  color: white;
+}
+.btn-rechazar:hover {
+  background-color: #c82333;
+}
+
+.btn-eliminar {
+  background-color: #111;
+  color: #FFD700;
+  border: 1px solid #FFD700;
+}
+.btn-eliminar:hover {
+  background-color: #FFD700;
+  color: #111;
+  border: 1px solid #111;
+}
+
+.btn-volver {
+  display: inline-block;
+  margin-top: 2rem;
+  background-color: #FFD700;
+  color: #111;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: background-color 0.3s ease;
+}
+.btn-volver:hover {
+  background-color: #111;
+  color: #FFD700;
+  border: 1px solid #FFD700;
+}
+</style>
+
+{% endblock %}

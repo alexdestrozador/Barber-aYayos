@@ -1,0 +1,98 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    padding: 20px;
+    color: #C79E42; /* Color dorado para el texto por defecto */
+}
+
+.tex1 {
+    margin-left: 30%;
+}
+
+/* Estilo del formulario */
+.formulario {
+    background-color: #000000;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: auto;
+    box-shadow: 0 6px 20px 3px #C79E42;
+}
+
+/* Etiquetas */
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #C79E42;
+}
+
+/* Inputs, select y textarea */
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid #cccccc;
+    color: #C79E42;
+    background-color: #000000;
+}
+
+/* Fila para nombre y apellido */
+.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.row > div {
+    flex: 1;
+}
+
+/* Botón principal (en formularios) */
+.submit-btn {
+    margin-top: 20px;
+    background-color: #C79E42; /* Color dorado */
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    color: #000000;
+}
+
+/* ✅ Nuevo botón para agendar citas (fuera del formulario) */
+.btn-agendar {
+    background-color: #C79E42;
+    color: #000000;
+    padding: 10px 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.btn-volver {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: black;
+    color: #e1e1e0;
+    padding: 10px 15px;
+    border: 2px solid #f0c040;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.btn-volver:hover {
+    background-color: #f0c040;
+    color: black;
+}

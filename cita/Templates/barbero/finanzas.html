@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Finanzas del Día{% endblock %}
+
+{% block content %}
+<h2 class="subtitulo">💸 Finanzas del Día</h2>
+
+<p><strong>Ingresos de hoy:</strong> ${{ ingresos_dia }}</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Servicio</th>
+            <th>Valor</th>
+            <th>Fecha</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cita in citas_hoy %}
+        <tr>
+            <td>{{ cita.cliente.user.first_name }}</td>
+            <td>{{ cita.servicio.nombre }}</td>
+            <td>${{ cita.servicio.precio }}</td>
+            <td>{{ cita.fecha_hora }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No tienes ingresos hoy.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<a href="{% url 'panel_barbero' %}" class="btn-volver">← Volver al Panel</a>
+
+{% endblock %}

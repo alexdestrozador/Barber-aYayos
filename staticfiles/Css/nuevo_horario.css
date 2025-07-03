@@ -1,0 +1,97 @@
+body {
+    background: url("../img/fondo-barberia.png") no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.main-wrapper {
+    padding-top: 100px; /* evita que se tape por el header */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    background-color: #121212;
+}
+
+.form-card {
+    background-color: #1e1e1e;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+    width: 100%;
+    max-width: 700px;
+    border: 1px solid #ffd700;
+}
+
+h2 {
+    color: #ffd700;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+label {
+    color: #fff;
+    font-weight: 600;
+}
+
+.form-control {
+    background-color: #2b2b2b;
+    border: 1px solid #ffd700;
+    color: #fff;
+}
+
+.form-control:disabled {
+    background-color: #333;
+    color: #bbb;
+}
+
+.btn-submit {
+    background-color: #ffd700;
+    color: #000;
+    font-weight: bold;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 8px;
+    margin-top: 20px;
+    display: block;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+    background-color: #e6c200;
+}
+
+.dia-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #333;
+}
+
+.form-check-label {
+    color: #fff;
+    font-weight: 500;
+    margin-left: 8px;
+    font-size: 1rem;
+}
+
+.hora-inputs {
+    display: flex;
+    gap: 15px;
+    margin-left: 30px;
+    flex-wrap: wrap;
+}
+
+.alert-danger {
+    background-color: #ff4d4d;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+}

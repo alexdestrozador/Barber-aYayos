@@ -9,26 +9,22 @@ class AdminProfile(models.Model):
     def __str__(self):
         return self.user.username
 
+
 class Cliente(models.Model):
     ESTADOS = (
         ('activo', 'Activo'),
         ('inactivo', 'Inactivo'),
     )
 
-    username = models.CharField(max_length=30, unique=True)
-    nombre = models.CharField(max_length=100)
-    correo = models.EmailField()
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     telefono = models.CharField(max_length=15)
-    password = models.CharField(max_length=100)
     estado = models.CharField(max_length=10, choices=ESTADOS, default='activo')  # 👈 nuevo campo
     activo = models.BooleanField(default=True) 
 
     def __str__(self):
-        return self.nombre
+        return self.user.get_full_name() if self.user else "Cliente sin usuario"
 
 
-
-    
 class Servicio(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True, null=True)
@@ -40,16 +36,14 @@ class Servicio(models.Model):
 
 
 class Barbero(models.Model):
-    username = models.CharField(max_length=30, unique=True)
-    nombre = models.CharField(max_length=100)
-    correo = models.EmailField()
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     telefono = models.CharField(max_length=15)
-    password = models.CharField(max_length=100)
-    activo = models.BooleanField(default=True) 
+    activo = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.username
-    
+        return self.user.get_full_name() if self.user else "Barbero sin user"
+
+
 class Cita(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
     barbero = models.ForeignKey(Barbero, on_delete=models.SET_NULL, null=True)
@@ -63,10 +57,11 @@ class Cita(models.Model):
     ], default='Pendiente')
 
     def __str__(self):
-        return f"{self.cliente.nombre} - {self.fecha_hora}"
+        return f"{self.cliente.user.get_full_name() if self.cliente.user else 'Cliente sin usuario'} - {self.fecha_hora}"
+
 
 class Horario(models.Model):
-    barbero = models.ForeignKey(Barbero, on_delete=models.CASCADE)
+    barbero = models.ForeignKey(Barbero, on_delete=models.CASCADE, related_name="horarios")
     dia = models.CharField(max_length=15, choices=[
         ('Lunes', 'Lunes'),
         ('Martes', 'Martes'),
@@ -80,22 +75,24 @@ class Horario(models.Model):
     hora_fin = models.TimeField()
 
     def __str__(self):
-        return f"{self.barbero.nombre} - {self.dia} de {self.hora_inicio} a {self.hora_fin}"
-    
+        return f"{self.barbero.user.get_full_name() if self.barbero.user else 'Barbero sin usuario'} - {self.dia} de {self.hora_inicio} a {self.hora_fin}"
+
+
 class QuienesSomos(models.Model):
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
 
     def __str__(self):
         return self.titulo
-    
+
+
 class Comision(models.Model):
     barbero = models.OneToOneField(Barbero, on_delete=models.CASCADE)
     porcentaje = models.DecimalField(max_digits=5, decimal_places=2, help_text="Porcentaje de comisión sobre el servicio")
 
     def __str__(self):
-        return f"{self.barbero.nombre} - {self.porcentaje}%"
-    
+        return f"{self.barbero.user.get_full_name() if self.barbero.user else 'Barbero sin usuario'} - {self.porcentaje}%"
+
 
 class Pago(models.Model):
     cita = models.OneToOneField(Cita, on_delete=models.CASCADE)
@@ -105,3 +102,30 @@ class Pago(models.Model):
 
     def __str__(self):
         return f"Pago de {self.cita} - {'Pagado' if self.pagado else 'Pendiente'}"
+
+ESTADOS_CITA = [
+    ('pendiente', 'Pendiente'),
+    ('aceptada', 'Aceptada'),
+    ('rechazada', 'Rechazada'),
+]
+
+class CitaCliente(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    barbero = models.ForeignKey(Barbero, on_delete=models.CASCADE)
+    servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE)
+    fecha_hora = models.DateTimeField()
+    estado = models.CharField(max_length=20, choices=ESTADOS_CITA, default='pendiente')
+
+    visible_para_barbero = models.BooleanField(default=True)
+    visible_para_cliente = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f'{self.cliente} - {self.servicio} ({self.estado})'
+
+class HorarioDisponible(models.Model):
+    barbero = models.ForeignKey(Barbero, on_delete=models.CASCADE)
+    fecha = models.DateField()
+    hora = models.TimeField()
+
+    def __str__(self):
+        return f"{self.fecha} - {self.hora} ({self.barbero})"

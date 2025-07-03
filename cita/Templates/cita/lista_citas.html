@@ -1,10 +1,40 @@
+{% load static %}
+
 <h2>Lista de Citas</h2>
-<a href="{% url 'nueva_cita' %}">Nueva Cita</a>
-<ul>
-    {% for cita in citas %}
-        <li>{{ cita.cliente.nombre }} - {{ cita.fecha_hora }} - {{ cita.servicio }} 
-            <a href="{% url 'editar_cita' cita.id %}">Editar</a>
-            <a href="{% url 'eliminar_cita' cita.id %}">Eliminar</a>
-        </li>
-    {% endfor %}
-</ul>
+   <link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+
+   {% include "inc/header.html" %}
+
+
+<table class="services-table" style="width: 100%; margin-top: 20px;">
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Fecha y Hora</th>
+            <th>Servicio</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cita in citas %}
+            <tr>
+                <td>{{ cita.cliente.user.get_full_name }}</td>
+                <td>{{ cita.fecha_hora|date:"d/m/Y H:i" }}</td>
+                <td>{{ cita.servicio.nombre }}</td>
+                <td>{{ cita.get_estado_display }}</td>
+                <td>
+                    <a href="{% url 'editar_cita' cita.id %}" class="btn btn-warning btn-sm">Editar</a>
+                    <a href="{% url 'eliminar_cita' cita.id %}" class="btn btn-danger btn-sm"
+                       onclick="return confirm('¿Estás seguro de eliminar esta cita?')">Eliminar</a>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="5" class="text-center text-light">No hay citas registradas.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+ {% include "inc/footer.html" %}
