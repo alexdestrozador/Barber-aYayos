@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Horarios Registrados</title>
+    <link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+</head>
+<body>
+
+{% include "inc/header.html" %}
+
+<div class="services-container" style="margin-top: 70px;">
+    <div class="services-header">
+        <h2>Horarios Registrados</h2>
+        <a href="{% url 'nuevo_horario' %}" class="btn-gold">Agregar nuevo horario</a>
+    </div>
+
+    <div class="services-card">
+        <table class="services-table">
+            <thead>
+                <tr>
+                    <th>Barbero</th>
+                    <th>Día</th>
+                    <th>Hora Inicio</th>
+                    <th>Hora Fin</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if barberos_con_horarios %}
+                    {% for barbero, horarios in barberos_con_horarios.items %}
+                        {% for horario in horarios %}
+                            <tr>
+                                <td>{{ barbero.user.first_name }}</td>
+                                <td>{{ horario.dia }}</td>
+                                <td>{{ horario.hora_inicio|time:"H:i" }}</td>
+                                <td>{{ horario.hora_fin|time:"H:i" }}</td>
+                                <td class="text-center">
+                                    <a href="{% url 'eliminar_horario' horario.id %}" class="btn btn-sm btn-dark" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-light">No hay horarios registrados.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include "inc/footer.html" %}
+
+</body>
+</html>

@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ega7^rmtj4rm0u#i5eh4e%qeh9pd4kgjp^tvem2yrke(pi%nm&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -82,12 +82,15 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'yayos_barber',
         'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
+        'PASSWORD': 'root',  # ← Aquí el cambio importante
+        'HOST': 'db',        # Este nombre debe coincidir con el servicio en docker-compose
         'PORT': '3306',
-        'init_command': "SET sql_mode='STRICT-TRANS_TABLES'"
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+        }
     }
 }
+
 
 
 # Password validation

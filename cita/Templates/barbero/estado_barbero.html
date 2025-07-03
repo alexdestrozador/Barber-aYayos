@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Estado del Perfil{% endblock %}
+
+{% block content %}
+<h2 class="subtitulo">Estado del Perfil</h2>
+
+<p>Tu perfil actualmente está: <strong>{{ barbero.activo|yesno:"Activo,Inactivo" }}</strong></p>
+
+<form action="{% url 'cambiar_estado_barbero' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">
+        {% if barbero.activo %}Desactivar{% else %}Activar{% endif %} Perfil
+    </button>
+</form>
+
+<a href="{% url 'panel_barbero' %}" class="btn-volver">← Volver al Panel</a>
+
+{% endblock %}

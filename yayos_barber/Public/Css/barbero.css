@@ -1,0 +1,143 @@
+/* barbero.css: estilos para el módulo del barbero */
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #fff;
+  color: #000;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+
+.titulo {
+  color: #000;
+  background-color: #FFD700; /* Amarillo oro */
+  padding: 10px;
+  text-align: center;
+  border-radius: 10px;
+  font-size: 24px;
+}
+
+.bienvenida {
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+.estado {
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.estado .activo {
+  color: green;
+}
+
+.estado .inactivo {
+  color: red;
+}
+
+.btn-estado {
+  background-color: #000;
+  color: #FFD700;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-estado:hover {
+  background-color: #333;
+}
+
+.subtitulo {
+  margin-top: 30px;
+  font-size: 20px;
+  border-bottom: 2px solid #FFD700;
+  padding-bottom: 5px;
+}
+
+.dinero {
+  color: #008000;
+  font-weight: bold;
+}
+
+.lista-citas {
+  list-style-type: none;
+  padding: 0;
+}
+
+.lista-citas li {
+  background-color: #f0f0f0;
+  margin: 6px 0;
+  padding: 10px;
+  border-left: 5px solid #FFD700;
+}
+
+form {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #fffef0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+form div {
+  margin-bottom: 10px;
+}
+
+input[type="date"],
+input[type="time"] {
+  padding: 8px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #000;
+  font-size: 14px;
+}
+
+button[type="submit"],
+button[type="button"] {
+  background-color: #FFD700;
+  color: #000;
+  border: 2px solid #000;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover,
+button[type="button"]:hover {
+  background-color: #ffcc00;
+}
+
+#horarios_container > div {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.btn-logout {
+  float: right;
+  background-color: #FFD700;
+  color: #000;
+  padding: 8px 12px;
+  border: 2px solid #000;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  margin-top: -40px;
+  margin-right: 10px;
+}
+
+.btn-logout:hover {
+  background-color: #ffcc00;
+}

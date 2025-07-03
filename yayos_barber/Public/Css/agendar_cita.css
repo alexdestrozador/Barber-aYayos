@@ -76,3 +76,23 @@ textarea {
     display: inline-block;
     transition: background-color 0.3s ease;
 }
+
+.btn-volver {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: black;
+    color: #e1e1e0;
+    padding: 10px 15px;
+    border: 2px solid #f0c040;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.btn-volver:hover {
+    background-color: #f0c040;
+    color: black;
+}

@@ -102,3 +102,30 @@ class Pago(models.Model):
 
     def __str__(self):
         return f"Pago de {self.cita} - {'Pagado' if self.pagado else 'Pendiente'}"
+
+ESTADOS_CITA = [
+    ('pendiente', 'Pendiente'),
+    ('aceptada', 'Aceptada'),
+    ('rechazada', 'Rechazada'),
+]
+
+class CitaCliente(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    barbero = models.ForeignKey(Barbero, on_delete=models.CASCADE)
+    servicio = models.ForeignKey(Servicio, on_delete=models.CASCADE)
+    fecha_hora = models.DateTimeField()
+    estado = models.CharField(max_length=20, choices=ESTADOS_CITA, default='pendiente')
+
+    visible_para_barbero = models.BooleanField(default=True)
+    visible_para_cliente = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f'{self.cliente} - {self.servicio} ({self.estado})'
+
+class HorarioDisponible(models.Model):
+    barbero = models.ForeignKey(Barbero, on_delete=models.CASCADE)
+    fecha = models.DateField()
+    hora = models.TimeField()
+
+    def __str__(self):
+        return f"{self.fecha} - {self.hora} ({self.barbero})"

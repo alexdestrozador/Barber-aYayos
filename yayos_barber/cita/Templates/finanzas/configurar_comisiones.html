@@ -1,0 +1,49 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+{% include "inc/header.html" %}
+
+<div class="services-container">
+    <div class="services-header">
+        <h2>Configurar Comisiones por Barbero</h2>
+    </div>
+
+    <div class="services-card">
+        <table class="services-table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Teléfono</th>
+                    <th>Correo</th>
+                    <th>Comisión (%)</th>
+                    <th class="text-center">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for barbero in barberos %}
+                    <tr>
+                        <td>{{ barbero.nombre }}</td>
+                        <td>{{ barbero.telefono }}</td>
+                        <td>{{ barbero.email }}</td>
+                        <td>
+                            {% if barbero.comision %}
+                                <span class="gold-text">{{ barbero.comision.porcentaje }}%</span>
+                            {% else %}
+                                <span class="empty-message">No asignada</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'editar_comision' barbero.id %}" class="btn btn-sm btn-warning">Editar</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-light">No hay barberos registrados.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% include "inc/footer.html" %}
