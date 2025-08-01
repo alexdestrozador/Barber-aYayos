@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Agregar Disponibilidad{% endblock %}
+
+{% block content %}
+<h2 class="subtitulo">🕒 Registrar Horario Disponible</h2>
+
+<form method="post">
+    {% csrf_token %}
+    
+    <label for="dia">📅 Día:</label>
+    <input type="date" name="dia" required><br><br>
+
+    <label for="horas">🕐 Selecciona los bloques de hora:</label><br>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px;">
+        {% for hora in horas %}
+            <label style="background: #111; color: #FFD700; padding: 5px; border-radius: 8px; text-align: center;">
+                <input type="checkbox" name="horas[]" value="{{ hora }}" style="margin-right: 5px;"> {{ hora }}
+            </label>
+        {% endfor %}
+    </div>
+
+    <br><br>
+    <button type="submit" style="background-color: #FFD700; color: #111; padding: 10px 20px; border-radius: 8px;">Guardar Horarios</button>
+</form>
+
+<br>
+<a href="{% url 'panel_barbero' %}" class="btn-volver">← Volver al Panel</a>
+
+<style>
+    .btn-volver {
+        color: #FFD700;
+        background: #111;
+        padding: 8px 16px;
+        text-decoration: none;
+        border-radius: 8px;
+    }
+    .btn-volver:hover {
+        background-color: #FFD700;
+        color: #111;
+    }
+</style>
+
+{% endblock %}

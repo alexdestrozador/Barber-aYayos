@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Historial de Citas{% endblock %}
+
+{% block content %}
+<h2>Historial de Citas</h2>
+
+<ul>
+  {% for cita in citas %}
+    <li>
+      <strong>Fecha:</strong> {{ cita.fecha_hora }} <br>
+      <strong>Servicio:</strong> {{ cita.servicio.nombre }} <br>
+      <strong>Estado:</strong>
+      {% if cita.estado == "Pendiente" %}
+        <span style="color: orange;">Pendiente</span>
+      {% elif cita.estado == "Aceptada" %}
+        <span style="color: green;">Aceptada</span>
+      {% elif cita.estado == "Rechazada" %}
+        <span style="color: red;">Rechazada</span>
+      {% endif %}
+      <br>
+      {% if cita.estado != "Pendiente" %}
+        <form method="post" action="{% url 'eliminar_cita_cliente' cita.id %}" style="margin-top: 10px;">
+          {% csrf_token %}
+          <button type="submit">Eliminar</button>
+        </form>
+      {% endif %}
+    </li>
+    <hr>
+  {% empty %}
+    <li>No tienes citas registradas aún.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

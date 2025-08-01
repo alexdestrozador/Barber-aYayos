@@ -65,7 +65,7 @@
                     <ul class="dropdown-menu dropdown-menu-dark">
                         <li><a class="dropdown-item" href="{% url 'nuevo_barbero' %}">Agregar Barbero</a></li>
                         <li><a class="dropdown-item" href="{% url 'lista_barberos' %}">Lista de Barberos</a></li>
-                        <li><a class="dropdown-item" href="{% url 'nuevo_horario' %}">Horario de Barberos</a></li>
+                        <li><a class="dropdown-item" href="{% url 'lista_horarios' %}">Horario de Barberos</a></li>
                     </ul>
                 </li>
                 <li class="nav-item">
@@ -73,12 +73,12 @@
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    📊 Finanzas
+                     Finanzas
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark">
-                    <li><a class="dropdown-item" href="{% url 'reporte_ingresos' %}">📈 Reportes de ingresos</a></li>
-                    <li><a class="dropdown-item" href="{% url 'ingresos_barbero' %}">👥 Ingresos por barbero</a></li>
-                    <li><a class="dropdown-item" href="{% url 'pagos' %}">💰 Pagos</a></li>
+                    <li><a class="dropdown-item" href="{% url 'reporte_ingresos' %}">Reportes de ingresos</a></li>
+                    <li><a class="dropdown-item" href="{% url 'ingresos_barbero' %}"> Ingresos por barbero</a></li>
+                    <li><a class="dropdown-item" href="{% url 'pagos' %}">Pagos</a></li>
                     <li><a class="dropdown-item" href="{% url 'configurar_comisiones' %}">⚙️ Configurar comisiones</a></li>
                 </ul>
             </li>
@@ -127,21 +127,21 @@
     </div>
 </nav>
 <script>
-// let timeout;
+ let timeout;
 
-// function resetTimer() {
-//     clearTimeout(timeout);
-//     timeout = setTimeout(() => {
-//         alert("Has estado inactivo durante 1 minuto. Se cerrará tu sesión.");
-//         window.location.href = "{% url 'logout' %}";
-//     }, 60000); // 60,000 ms = 1 minuto
-// }
+function resetTimer() {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+        alert("Has estado inactivo durante 20 minutos. Se cerrará tu sesión.");
+        window.location.href = "{% url 'logout' %}";
+    }, 1200000); // 60,000 ms = 1 minuto
+}
 
-// // Eventos que reinician el contador de inactividad
-// ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(event => {
-//     window.addEventListener(event, resetTimer);
-// });
+//Eventos que reinician el contador de inactividad
+['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(event => {
+     window.addEventListener(event, resetTimer);
+ });
 
-// resetTimer(); // Inicializa el temporizador al cargar la página
+resetTimer();
 </script>
 

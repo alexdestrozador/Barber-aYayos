@@ -1,7 +1,7 @@
 from django.db.models import Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .models import Cita, Cliente, Servicio, Horario, Barbero, QuienesSomos, Pago, Comision
+from .models import Cita, Cliente, Servicio, Horario, Barbero, QuienesSomos, Pago, Comision, HorarioDisponible, CitaCliente
 from datetime import datetime
 from django.utils.timezone import datetime
 from django.http import HttpResponse, JsonResponse
@@ -9,6 +9,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.decorators import user_passes_test, login_required
 from .forms import PerfilAdminForm
 from .models import AdminProfile
+from collections import defaultdict
+import calendar
 from django.utils.dateparse import parse_datetime
 from datetime import timedelta
 from django.contrib.auth import authenticate, login
@@ -59,7 +61,7 @@ def panel_admin(request):
 
 
 def index(request):
-    return render(request, 'Landing/index.html')
+    return render(request, 'Landing/holamundo.html')
 
 def home(request):
     return render(request, 'Home/home.html')
@@ -84,35 +86,35 @@ def login_view(request):
         password = request.POST.get('password')
 
         user = authenticate(request, username=username, password=password)
-        if user:
+        if user is not None:
             login(request, user)
 
-            try:
-                barbero = Barbero.objects.get(user=user)
-                if not barbero.activo:
-                    messages.error(request, "Cuenta inactiva.")
-                    return redirect('login')
-                request.session['usuario'] = barbero.user.username
+            # Verificar si es barbero
+            if Barbero.objects.filter(user=user).exists():
+                request.session['usuario'] = user.username
                 request.session['tipo'] = 'barbero'
                 return redirect('panel_barbero')
-            except Barbero.DoesNotExist:
-                pass
 
-            try:
+            # Verificar si es cliente
+            elif Cliente.objects.filter(user=user).exists():
                 cliente = Cliente.objects.get(user=user)
                 if not cliente.activo:
                     messages.error(request, "Cuenta inactiva.")
                     return redirect('login')
-                request.session['usuario'] = cliente.user.username
+
+                request.session['usuario'] = user.username
                 request.session['tipo'] = 'cliente'
                 return redirect('perfil_cliente')
-            except Cliente.DoesNotExist:
-                pass
 
-            if user.is_superuser:
+            # Verificar si es administrador
+            elif user.is_superuser:
+                request.session['usuario'] = user.username
+                request.session['tipo'] = 'admin'
                 return redirect('panel_admin')
 
+        # Si no se autentica correctamente
         messages.error(request, "Credenciales inválidas")
+
     return render(request, 'Landing/login.html')
 
 def registro_cliente(request):
@@ -642,7 +644,10 @@ def editar_comision(request, barbero_id):
 def perfil_cliente(request):
     try:
         cliente = Cliente.objects.get(user=request.user)
-        citas = Cita.objects.filter(cliente=cliente).select_related('servicio')
+        citas = CitaCliente.objects.filter(
+            cliente=cliente,
+            visible_para_cliente=True  # 👈 solo las visibles
+        ).select_related('servicio')
     except Cliente.DoesNotExist:
         cliente = None
         citas = []
@@ -661,7 +666,7 @@ def agendar_cita(request):
     except Cliente.DoesNotExist:
         return render(request, "cliente/agendar_cita.html", {
             "error": "No estás registrado como cliente.",
-            "barberos": Barbero.objects.all(),
+            "barberos": Barbero.objects.filter(activo=True),
             "servicios": Servicio.objects.all(),
             "horarios_json": "{}"
         })
@@ -669,23 +674,29 @@ def agendar_cita(request):
     if request.method == "POST":
         try:
             hora_str = request.POST.get("fecha_hora")  # Ej: "06:17"
+            fecha_str = request.POST.get("fecha")       # También necesitamos la fecha
             servicio_id = request.POST.get("servicio")
             barbero_id = request.POST.get("barbero")
             estado = request.POST.get("estado", "pendiente")
 
             # Validaciones
-            if not hora_str or not servicio_id or not barbero_id:
+            if not hora_str or not fecha_str or not servicio_id or not barbero_id:
                 raise ValueError("Todos los campos obligatorios deben estar completos.")
 
             # Parseo
             hora_obj = datetime.strptime(hora_str, "%H:%M").time()
-            fecha_actual = date.today()
-            fecha_hora = datetime.combine(fecha_actual, hora_obj)
+            fecha_obj = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+            fecha_hora = datetime.combine(fecha_obj, hora_obj)
 
             servicio = Servicio.objects.get(id=servicio_id)
-            barbero = Barbero.objects.get(id=barbero_id)
+            barbero = get_object_or_404(Barbero, id=barbero_id, activo=True)
 
-            Cita.objects.create(
+            # ✅ Validar si ya existe una cita para esa fecha y hora con ese barbero
+            if CitaCliente.objects.filter(barbero=barbero, fecha_hora=fecha_hora).exists():
+                raise ValueError("Esa hora ya está ocupada por otra cita. Por favor elige otra.")
+
+            # Crear cita
+            CitaCliente.objects.create(
                 cliente=cliente,
                 barbero=barbero,
                 fecha_hora=fecha_hora,
@@ -699,7 +710,7 @@ def agendar_cita(request):
             horarios_json = _generar_horarios_json()
             return render(request, "cliente/agendar_cita.html", {
                 "error": str(e),
-                "barberos": Barbero.objects.all(),
+                "barberos": Barbero.objects.filter(activo=True),
                 "servicios": Servicio.objects.all(),
                 "horarios_json": horarios_json
             })
@@ -708,10 +719,11 @@ def agendar_cita(request):
     horarios_json = _generar_horarios_json()
 
     return render(request, "cliente/agendar_cita.html", {
-        "barberos": Barbero.objects.all(),
+        "barberos": Barbero.objects.filter(activo=True),
         "servicios": Servicio.objects.all(),
         "horarios_json": horarios_json
     })
+
 
 
 def _generar_horarios_json():
@@ -728,3 +740,256 @@ def _generar_horarios_json():
             horarios_por_barbero[barbero_id].append(horario_str)
 
     return json.dumps(horarios_por_barbero, cls=DjangoJSONEncoder)
+
+
+@login_required
+def cambiar_estado_barbero(request):
+    barbero = request.user.barbero
+    if request.method == 'POST':
+        barbero.activo = not barbero.activo
+        barbero.save()
+        return redirect('panel_barbero')
+    return render(request, 'barbero/estado_barbero.html', {'barbero': barbero})
+
+
+
+@login_required
+def guardar_horario_disponible(request):
+    if request.method == 'POST':
+        fechas = request.POST.getlist('fecha[]')
+        horas_inicio = request.POST.getlist('hora_inicio[]')
+        horas_fin = request.POST.getlist('hora_fin[]')
+
+        barbero = Barbero.objects.get(user=request.user)
+
+        for f, h_ini, h_fin in zip(fechas, horas_inicio, horas_fin):
+            HorarioDisponible.objects.create(
+                barbero=barbero,
+                fecha=f,
+                hora_inicio=h_ini,
+                hora_fin=h_fin
+            )
+
+        messages.success(request, "Horarios guardados correctamente.")
+        return redirect('panel_barbero')
+    
+@login_required
+def historial_citas_cliente(request):
+    cliente = request.user.cliente  # Asumiendo que tu modelo Cliente tiene relación OneToOne con User
+    citas = CitaCliente.objects.filter(cliente=cliente).order_by('-fecha_hora')
+    return render(request, 'cliente/historial_citas.html', {
+        'citas': citas
+    })
+
+@login_required
+def eliminar_cita_cliente(request, cita_id):
+    cliente = request.user.cliente
+    cita = get_object_or_404(CitaCliente, id=cita_id, cliente=cliente)
+
+    cita.visible_para_cliente = False
+    cita.save()
+    messages.success(request, "La cita fue eliminada de tu perfil.")
+    return redirect('perfil_cliente')
+
+@login_required
+def eliminar_cita_barbero(request, cita_id):
+    barbero = request.user.barbero
+    cita = get_object_or_404(CitaCliente, id=cita_id, barbero=barbero)
+
+    cita.visible_para_barbero = False
+    cita.save()
+    messages.success(request, "La cita fue eliminada del panel del barbero.")
+    return redirect('citas_asignadas')
+
+
+@login_required
+def aceptar_cita(request, cita_id):
+    print("✅ Aceptando cita", cita_id)
+    cita = get_object_or_404(CitaCliente, id=cita_id, barbero=request.user.barbero)
+    cita.estado = 'Aceptada'
+    cita.save()
+    return redirect('citas_asignadas_barbero')
+
+@login_required
+def rechazar_cita(request, cita_id):
+    cita = get_object_or_404(CitaCliente, id=cita_id, barbero=request.user.barbero)
+    cita.estado = 'Rechazada'
+    cita.save()
+    return redirect('citas_asignadas_barbero')
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Barbero, CitaCliente
+
+@login_required
+def citas_asignadas_barbero(request):
+    try:
+        barbero = Barbero.objects.get(user=request.user)
+    except Barbero.DoesNotExist:
+        messages.error(request, "No sos barbero.")
+        return redirect('home')
+
+    citas = CitaCliente.objects.filter(
+        barbero=barbero,
+        visible_para_barbero=True  # 👈 solo las visibles para el barbero
+    ).select_related('cliente', 'servicio').order_by('fecha_hora')
+
+    return render(request, 'barbero/citas_asignadas.html', {
+        'citas': citas,
+        'barbero': barbero,
+    })
+
+
+@login_required
+def finanzas_barbero(request):
+    barbero = request.user.barbero
+    hoy = date.today()
+    citas_hoy = CitaCliente.objects.filter(
+        barbero=barbero,
+        estado='Aceptada',
+        fecha_hora__date=hoy
+    ).select_related('servicio', 'cliente')
+
+    ingresos = sum([cita.servicio.precio for cita in citas_hoy])
+
+    return render(request, 'barbero/finanzas.html', {
+        'barbero': barbero,
+        'citas_hoy': citas_hoy,
+        'ingresos_dia': ingresos,
+    })
+
+@login_required
+def guardar_horario_disponible(request):
+    barbero = request.user.barbero
+    if request.method == 'POST':
+        dia_str = request.POST.get('dia')
+        horas = request.POST.getlist('horas[]')
+
+        if not dia_str or not horas:
+            messages.error(request, "Debes seleccionar una fecha y al menos una hora.")
+            return redirect('guardar_horario_disponible')
+
+        fecha = datetime.strptime(dia_str, "%Y-%m-%d").date()
+
+        for hora_str in horas:
+            hora = datetime.strptime(hora_str, "%H:%M").time()
+            HorarioDisponible.objects.create(
+                barbero=barbero,
+                fecha=fecha,
+                hora=hora
+            )
+
+        messages.success(request, "Horarios guardados correctamente.")
+        return redirect('panel_barbero')
+    
+    # Generar lista de horas: 8:00 AM a 8:00 PM en bloques de 30 mins
+    horas = []
+    inicio = time(8, 0)
+    fin = time(20, 0)
+    actual = datetime.combine(date.today(), inicio)
+    while actual.time() <= fin:
+        horas.append(actual.time().strftime("%H:%M"))
+        actual += timedelta(minutes=30)
+
+    return render(request, 'barbero/agregar_horario.html', {
+        'horas': horas
+    })
+
+
+@login_required
+def eliminar_cita(request, cita_id):
+    cita = get_object_or_404(CitaCliente, id=cita_id)
+
+    user = request.user
+
+    if hasattr(user, 'cliente') and cita.cliente.user == user:
+        cita.delete()
+        messages.success(request, "Tu cita ha sido eliminada con éxito.")
+        return redirect('perfil_cliente')
+
+    elif hasattr(user, 'barbero') and cita.barbero.user == user:
+        cita.delete()
+        messages.success(request, "Has eliminado la cita del cliente.")
+        return redirect('citas_asignadas_barbero')
+
+    else:
+        messages.error(request, "No tienes permiso para eliminar esta cita.")
+        return redirect('home')
+    
+@login_required
+def panel_barbero(request):
+    try:
+        barbero = Barbero.objects.get(user=request.user)
+    except Barbero.DoesNotExist:
+        messages.error(request, "No sos barbero.")
+        return redirect('home')
+
+    hoy = date.today()
+
+    citas = Cita.objects.filter(
+        barbero=barbero
+    ).select_related('cliente', 'servicio').order_by('fecha_hora')
+
+    ingresos_hoy = Pago.objects.filter(
+        cita__barbero=barbero,
+        cita__fecha_hora__date=hoy,
+        pagado=True
+    ).aggregate(Sum('monto'))['monto__sum'] or 0
+
+    horarios = HorarioDisponible.objects.filter(
+        barbero=barbero,
+        fecha__gte=hoy
+    ).order_by('fecha', 'hora')  # 🛠️ CORREGIDO
+
+    context = {
+        'barbero': barbero,
+        'citas': citas,
+        'ingresos_hoy': ingresos_hoy,
+        'horarios': horarios,
+    }
+    return render(request, 'barbero/panel_barbero.html', context)
+
+@login_required
+def obtener_horas_disponibles(request):
+    barbero_id = request.GET.get('barbero_id')
+    fecha_str = request.GET.get('fecha')
+
+    if not barbero_id or not fecha_str:
+        return JsonResponse({'error': 'Datos incompletos'}, status=400)
+
+    try:
+        fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+
+        # Obtener todos los horarios disponibles exactos para ese barbero y esa fecha
+        horarios = HorarioDisponible.objects.filter(
+            barbero_id=barbero_id,
+            fecha=fecha
+        )
+
+        # Obtener todas las citas ya ocupadas
+        horas_ocupadas = set(
+            CitaCliente.objects.filter(
+                barbero_id=barbero_id,
+                fecha_hora__date=fecha
+            ).values_list('fecha_hora', flat=True)
+        )
+
+        horas_ocupadas = set(hora.time() for hora in horas_ocupadas)
+
+        # Armar la respuesta
+        respuesta = []
+        for horario in horarios:
+            hora = horario.hora
+            hora_str = hora.strftime("%H:%M")
+            disponible = hora not in horas_ocupadas
+            respuesta.append({
+                "hora": hora_str,
+                "disponible": disponible
+            })
+
+        return JsonResponse(respuesta, safe=False)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+

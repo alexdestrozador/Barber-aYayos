@@ -1,7 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title>Agendar Cita</title>
@@ -10,101 +9,174 @@
     <link rel="stylesheet" href="{% static 'Css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'Css/agendar_cita.css' %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        .hora-btn {
+            display: inline-block;
+            margin: 0.25rem;
+            padding: 0.4rem 0.8rem;
+            background-color: #FFD700;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .hora-btn:hover {
+            background-color: #e5c100;
+        }
+        .hora-btn.selected {
+            background-color: #111;
+            color: #FFD700;
+            border: 2px solid #FFD700;
+        }
+        .hora-btn.disabled {
+            background-color: #ccc;
+            color: #666;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 
 <body>
 
-    <div class="formulario">
-        <h2 class="tex1">Agendar Cita</h2>
+    <a href="{% url 'perfil_cliente' %}" class="btn-volver">
+    <i class="fas fa-arrow-left"></i> Volver
+</a>
 
-        {% if error %}
+<div class="formulario">
+    <h2 class="tex1">Agendar Cita</h2>
+
+    {% if error %}
         <div class="alert alert-danger">{{ error }}</div>
-        {% endif %}
+    {% endif %}
 
-        <form method="POST" action="{% url 'agendar_cita' %}" enctype="multipart/form-data">
-            {% csrf_token %}
+    <form method="POST" action="{% url 'agendar_cita' %}" enctype="multipart/form-data">
+        {% csrf_token %}
 
-            <!-- Barbero -->
-            <label for="barbero">Barbero:</label>
-            <select id="barbero" name="barbero" required onchange="mostrarHorarios()">
-                <option value="">Selecciona un barbero</option>
-                {% for barbero in barberos %}
-                <option value="{{ barbero.id }}">{{ barbero.user.get_full_name }}</option>
-                {% endfor %}
-            </select>
+        <!-- Barbero -->
+        <label for="barbero">Barbero:</label>
+        <select id="barbero" name="barbero" required>
+            <option value="">Selecciona un barbero</option>
+            {% for barbero in barberos %}
+                {% if barbero.activo %}
+                    <option value="{{ barbero.id }}">{{ barbero.user.get_full_name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
 
-            <!-- Horario -->
-            <label for="horario">Horario:</label>
-            <select id="horario" name="fecha_hora" required>
-                <option value="">Selecciona un horario</option>
-            </select>
+        <!-- Fecha -->
+        <label for="fecha">Fecha:</label>
+        <input type="date" id="fecha" name="fecha" required min="{{ today|default:'' }}">
 
-            <!-- Nombre y Apellido -->
-            <div class="row">
-                <div>
-                    <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" name="nombre" required value="{{ request.POST.nombre|default:'' }}">
-                </div>
-                <div>
-                    <label for="apellido">Apellido:</label>
-                    <input type="text" id="apellido" name="apellido" required
-                        value="{{ request.POST.apellido|default:'' }}">
-                </div>
+        <!-- Horario -->
+        <label for="horario">Horarios Disponibles:</label>
+        <div id="horarios-container">
+            <p class="text-muted">Selecciona una fecha y un barbero.</p>
+        </div>
+
+        <!-- Campo oculto para guardar hora seleccionada -->
+        <input type="hidden" name="fecha_hora" id="fecha_hora">
+
+        <!-- Nombre y Apellido -->
+        <div class="row">
+            <div>
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required value="{{ request.POST.nombre|default:'' }}">
             </div>
+            <div>
+                <label for="apellido">Apellido:</label>
+                <input type="text" id="apellido" name="apellido" required value="{{ request.POST.apellido|default:'' }}">
+            </div>
+        </div>
 
-            <!-- Correo -->
-            <label for="correo">Correo Electrónico:</label>
-            <input type="email" id="correo" name="correo" required value="{{ request.POST.correo|default:'' }}">
+        <!-- Correo -->
+        <label for="correo">Correo Electrónico:</label>
+        <input type="email" id="correo" name="correo" required value="{{ request.POST.correo|default:'' }}">
 
-            <!-- Servicio -->
-            <label for="servicio">Servicio:</label>
-            <select id="servicio" name="servicio" required>
-                <option value="">Selecciona un servicio</option>
-                {% for servicio in servicios %}
+        <!-- Servicio -->
+        <label for="servicio">Servicio:</label>
+        <select id="servicio" name="servicio" required>
+            <option value="">Selecciona un servicio</option>
+            {% for servicio in servicios %}
                 <option value="{{ servicio.id }}">{{ servicio.nombre }}</option>
-                {% endfor %}
-            </select>
+            {% endfor %}
+        </select>
 
-            <!-- Sugerencia -->
-            <label for="sugerencia">Sugerencia de corte (opcional):</label>
-            <textarea id="sugerencia" name="sugerencia" rows="4"
-                placeholder="Describe cómo te gustaría el corte...">{{ request.POST.sugerencia|default:'' }}</textarea>
+        <!-- Sugerencia -->
+        <label for="sugerencia">Sugerencia de corte (opcional):</label>
+        <textarea id="sugerencia" name="sugerencia" rows="4"
+                  placeholder="Describe cómo te gustaría el corte...">{{ request.POST.sugerencia|default:'' }}</textarea>
 
-            <!-- Imagen -->
-            <label for="imagen">Sube una imagen de referencia (opcional):</label>
-            <input type="file" id="imagen" name="imagen" accept="image/*">
+        <!-- Imagen -->
+        <label for="imagen">Sube una imagen de referencia (opcional):</label>
+        <input type="file" id="imagen" name="imagen" accept="image/*">
 
-            <!-- Estado (oculto) -->
-            <input type="hidden" name="estado" value="pendiente">
+        <!-- Estado -->
+        <input type="hidden" name="estado" value="pendiente">
 
-            <!-- Botón -->
-            <button type="submit" class="submit-btn">Agendar</button>
-        </form>
-    </div>
+        <!-- Botón -->
+        <button type="submit" class="submit-btn">Agendar</button>
+    </form>
+</div>
 
-    <!-- Script: Mostrar horarios dinámicamente por barbero -->
-    <script>
-        const horariosPorBarbero = JSON.parse('{{ horarios_json|escapejs }}');
+<!-- JS para cargar horarios disponibles -->
+<script>
+    const barberoInput = document.getElementById("barbero");
+    const fechaInput = document.getElementById("fecha");
+    const horariosContainer = document.getElementById("horarios-container");
+    const fechaHoraInput = document.getElementById("fecha_hora");
 
-        function mostrarHorarios() {
-            const barberoId = document.getElementById("barbero").value;
-            const horarioSelect = document.getElementById("horario");
+    function cargarHorarios() {
+        const barberoId = barberoInput.value;
+        const fecha = fechaInput.value;
 
-            horarioSelect.innerHTML = '<option value="">Selecciona un horario</option>';
+        horariosContainer.innerHTML = "";
 
-            if (horariosPorBarbero[barberoId]) {
-                horariosPorBarbero[barberoId].forEach(horarioTexto => {
-                    const hora = horarioTexto.split(" - ")[1]; 
-                    const option = document.createElement("option");
-                    option.value = hora;             
-                    option.textContent = horarioTexto;
-                    horarioSelect.appendChild(option);
-                });
-            }
+        if (!barberoId || !fecha) {
+            horariosContainer.innerHTML = "<p class='text-muted'>Selecciona una fecha y un barbero.</p>";
+            fechaHoraInput.value = "";
+            return;
         }
-    </script>
 
-    {% include "inc/footer.html" %}
-</body>
+        fetch(`/ajax/horas-disponibles/?barbero_id=${barberoId}&fecha=${fecha}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!Array.isArray(data) || data.length === 0) {
+                    horariosContainer.innerHTML = "<p class='text-danger'>No hay horarios disponibles para este día.</p>";
+                    fechaHoraInput.value = "";
+                    return;
+                }
 
-</html>
+                data.forEach(hora => {
+                    const btn = document.createElement("button");
+                    btn.type = "button";
+                    btn.textContent = hora.hora;
+                    btn.classList.add("hora-btn");
+
+                    if (!hora.disponible) {
+                        btn.classList.add("disabled");
+                        btn.disabled = true;
+                    }
+
+                    btn.addEventListener("click", () => {
+                        document.querySelectorAll(".hora-btn").forEach(b => b.classList.remove("selected"));
+                        btn.classList.add("selected");
+                        fechaHoraInput.value = hora.hora;
+                    });
+
+                    horariosContainer.appendChild(btn);
+                });
+            })
+            .catch(err => {
+                horariosContainer.innerHTML = "<p class='text-danger'>Error cargando horarios.</p>";
+                fechaHoraInput.value = "";
+            });
+    }
+
+    barberoInput.addEventListener("change", cargarHorarios);
+    fechaInput.addEventListener("change", cargarHorarios);
+</script>
+
+{% include "inc/footer.html" %}
+

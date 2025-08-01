@@ -2,7 +2,9 @@
 
 <h2>Lista de Citas</h2>
    <link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
-<a href="{% url 'nueva_cita' %}" class="btn-gold">+ Nueva Cita</a>
+
+   {% include "inc/header.html" %}
+
 
 <table class="services-table" style="width: 100%; margin-top: 20px;">
     <thead>
@@ -34,3 +36,5 @@
         {% endfor %}
     </tbody>
 </table>
+
+ {% include "inc/footer.html" %}

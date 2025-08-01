@@ -1,7 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <title>Perfil del Cliente</title>
@@ -9,13 +8,10 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{% static 'Css/bootstrap.css' %}">
     <link rel="stylesheet" href="{% static 'Css/perfil_cliente.css' %}">
-
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </head>
 
 <body>
-
     <div class="container py-5">
 
         <!-- Perfil del cliente -->
@@ -26,17 +22,14 @@
                         {{ cliente.user.first_name|first|upper }}
                     </div>
                 </div>
-
                 <div class="col-md-9">
                     <div class="card-body">
                         <div class="d-flex justify-content-end mb-3">
                             <div class="dropdown">
-                                <button class="btn btn-custom dropdown-toggle" type="button" id="dropdownMenuButton"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="btn btn-custom dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-three-dots-vertical"></i>
                                 </button>
                                 <ul class="dropdown-menu custom-dropdown" aria-labelledby="dropdownMenuButton">
-                                    <!--linea para editar perfil-->
                                     <li><a class="dropdown-item" href="{% url 'logout' %}">Cerrar Sesión</a></li>
                                 </ul>
                             </div>
@@ -76,6 +69,7 @@
                                 <th><i class="bi bi-clock"></i> Hora</th>
                                 <th>Servicio</th>
                                 <th>Estado</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -85,6 +79,14 @@
                                 <td>{{ cita.fecha_hora|time:"H:i" }}</td>
                                 <td>{{ cita.servicio.nombre }}</td>
                                 <td>{{ cita.estado }}</td>
+                                <td>
+                                    <form method="post" action="{% url 'eliminar_cita_cliente' cita.id %}" onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta cita?');">
+                                        {% csrf_token %}
+                                        <button class="btn btn-sm btn-danger" title="Eliminar cita">
+                                            <i class="bi bi-trash3"></i> Eliminar
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -102,5 +104,4 @@
 
     {% include "inc/footer.html" %}
 </body>
-
 </html>

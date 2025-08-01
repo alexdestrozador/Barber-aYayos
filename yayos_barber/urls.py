@@ -21,8 +21,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('cita.urls')), 
+    path('', include('cita.urls')),  # Aquí se conecta tu app
+    path('admin/', admin.site.urls),  # Aquí debe ir el panel de Django
 ]
 
 if settings.DEBUG:

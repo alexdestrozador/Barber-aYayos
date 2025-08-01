@@ -4,4 +4,4 @@ def home(request):
     return render(request, 'Home/home.html')
 
 def main(request):
-    return render(request, 'Landing/index.html')
+    return render(request, 'Landing/holamundo.html')

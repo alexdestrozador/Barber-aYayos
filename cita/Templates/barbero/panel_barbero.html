@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Panel del Barbero{% endblock %}
+
+{% block content %}
+<h2 class="subtitulo">Bienvenido, {{ barbero.user.first_name }}</h2>
+
+<div class="tarjetas-contenedor" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+    <!-- Tarjeta 1: Citas -->
+    <a href="{% url 'citas_asignadas_barbero' %}" class="tarjeta-panel">
+        <h3>📅 Citas Asignadas</h3>
+        <p>Consulta tus próximas citas</p>
+    </a>
+
+    <!-- Tarjeta 2: Estado del Perfil -->
+    <a href="{% url 'cambiar_estado_barbero' %}" class="tarjeta-panel">
+        <h3>✅ Estado del Perfil</h3>
+        <p>{{ barbero.activo|yesno:"Activo,Inactivo" }}</p>
+    </a>
+
+    <!-- Tarjeta 3: Finanzas -->
+    <a href="{% url 'finanzas_barbero' %}" class="tarjeta-panel">
+        <h3>💸 Finanzas del Día</h3>
+        <p>Revisa tus ingresos de hoy</p>
+    </a>
+
+    <!-- Tarjeta 4: Agregar Horarios -->
+    <a href="{% url 'guardar_horario_disponible' %}" class="tarjeta-panel">
+        <h3>🕒 Disponibilidad</h3>
+        <p>Agrega días y horas en que trabajas</p>
+    </a>
+</div>
+
+<style>
+.tarjeta-panel {
+    display: block;
+    background-color: #111;
+    color: #FFD700;
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.tarjeta-panel:hover {
+    background-color: #FFD700;
+    color: #111;
+    transform: translateY(-4px);
+}
+</style>
+{% endblock %}
