@@ -82,8 +82,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'yayos_barber',
         'USER': 'root',
-        'PASSWORD': '',
-        'HOST': '127.0.0.1',
+        'PASSWORD': 'root',
+        'HOST': 'db',  # nombre del servicio en docker-compose
         'PORT': '3306',
         'init_command': "SET sql_mode='STRICT-TRANS_TABLES'"
     }
