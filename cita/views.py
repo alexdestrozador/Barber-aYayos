@@ -61,7 +61,7 @@ def panel_admin(request):
 
 
 def index(request):
-    return render(request, 'Landing/index.html')
+    return render(request, 'Landing/holamundo.html')
 
 def home(request):
     return render(request, 'Home/home.html')
