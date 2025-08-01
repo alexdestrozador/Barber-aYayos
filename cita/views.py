@@ -60,7 +60,7 @@ def panel_admin(request):
     return render(request, 'Home/home.html')
 
 
-def index(request):
+def holamundo(request):
     return render(request, 'Landing/holamundo.html')
 
 def home(request):
