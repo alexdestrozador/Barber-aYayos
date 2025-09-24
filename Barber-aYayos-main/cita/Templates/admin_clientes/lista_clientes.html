@@ -1,0 +1,92 @@
+{% load static %}
+{% include "inc/header.html" %}
+
+<link rel="stylesheet" href="{% static 'Css/custom.css' %}">
+
+<div class="main-wrapper">
+
+    {% include "inc/topbar.html" %}
+    {% include "inc/sidebar.html" %}
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+
+            <!-- ============================================================== -->
+            <!-- Bread crumb -->
+            <!-- ============================================================== -->
+            <div class="row page-titles d-flex align-items-center">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-themecolor m-0">Clientes</h3>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'panel_control' %}">Administrador</a>
+                        </li>
+                        <li class="breadcrumb-item active">Lista de Clientes</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- ============================================================== -->
+            <!-- Lista de clientes -->
+            <!-- ============================================================== -->
+            <div class="services-container">
+                
+                
+
+                <!-- Tabla -->
+                <div class="services-card">
+                    <table class="services-table">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Username</th>
+                                <th>Teléfono</th>
+                                <th>Email</th>
+                                <th>Estado</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for cliente in clientes %}
+                                <tr>
+                                    <td>{{ cliente.user.first_name }}</td>
+                                    <td>{{ cliente.user.username }}</td>
+                                    <td>{{ cliente.telefono }}</td>
+                                    <td>{{ cliente.user.email }}</td>
+                                    <td>
+                                        {% if cliente.estado == "activo" %}
+                                            <span style="color: rgb(160, 148, 10);">Activo</span>
+                                        {% else %}
+                                            <span style="color: rgb(120, 113, 113);">Inactivo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{% url 'cambiar_estado_cliente' cliente.id %}" class="btn btn-sm btn-warning">
+                                            {% if cliente.estado == "activo" %} Desactivar {% else %} Activar {% endif %}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-light">No hay clientes registrados.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mensajes -->
+            {% if messages %}
+            <div class="messages" id="mensaje-exito">
+                {% for message in messages %}
+                    <p style="color: green;">{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+{% include "inc/footer.html" %}

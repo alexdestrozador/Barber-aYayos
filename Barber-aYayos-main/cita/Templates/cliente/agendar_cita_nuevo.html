@@ -1,0 +1,179 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Agendar Cita</title>
+  <link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    body { background: #111; color: #fff; font-family: Arial; }
+    .form-card {
+      background: #1c1c1c; padding: 25px; border-radius: 12px;
+      width: 550px; margin: 40px auto;
+      box-shadow: 0 0 20px rgba(255,215,0,0.4);
+      transition: transform 0.2s;
+    }
+    .form-card:hover { transform: scale(1.02); }
+    h2 { text-align: center; color: #FFD700; margin-bottom: 20px; }
+
+    label { display: block; margin-top: 12px; color: #FFD700; }
+
+    select {
+      width: 100%; padding: 10px; margin-top: 5px;
+      background: #333; border: none; border-radius: 6px; color: #fff;
+    }
+
+    /* Servicios en formato card */
+    .services-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .service-card {
+      background: #222; padding: 12px; border-radius: 8px;
+      cursor: pointer; border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .service-card:hover { border-color: #FFD700; }
+    .service-card.active { border-color: #FFD700; background: #333; }
+
+    .btn {
+      display: block; margin-top: 25px; width: 100%;
+      background: #FFD700; color: #000;
+      padding: 12px; border: none; border-radius: 8px;
+      font-weight: bold; cursor: pointer; font-size: 16px;
+      transition: background 0.3s, transform 0.2s;
+    }
+    .btn:hover { background: #e6c200; transform: scale(1.03); }
+
+    /* Resumen dinámico */
+    #resumen {
+      margin-top: 20px; background: #222; padding: 15px; border-radius: 10px;
+      display:none; opacity: 0; transform: translateY(10px);
+      transition: all 0.3s ease-in-out;
+    }
+    #resumen.visible { display:block; opacity: 1; transform: translateY(0); }
+  </style>
+</head>
+<body>
+  <div class="form-card">
+    <h2>Agendar Cita</h2>
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <label for="barbero">Barbero:</label>
+      <select id="barbero" name="barbero" required>
+        <option value="">--Selecciona--</option>
+        {% for b in barberos %}
+          <option value="{{ b.id }}">{{ b.user.get_full_name }}</option>
+        {% endfor %}
+      </select>
+
+      <label>Servicios:</label>
+      <div class="services-container">
+        {% for s in servicios %}
+          <div class="service-card" data-id="{{ s.id }}" data-precio="{{ s.precio }}" data-duracion="{{ s.duracion }}">
+            <strong>{{ s.nombre }}</strong><br>
+            ${{ s.precio }} - {{ s.duracion }} min
+          </div>
+        {% endfor %}
+      </div>
+      <input type="hidden" id="servicios" name="servicios">
+
+      <div id="resumen">
+        <p><strong>Total Precio:</strong> $<span id="total-precio"></span></p>
+        <p><strong>Total Duración:</strong> <span id="total-duracion"></span> min</p>
+      </div>
+
+      <label for="fecha_hora">Horarios disponibles:</label>
+      <select id="fecha_hora" name="fecha_hora" required>
+        <option value="">--Selecciona barbero y servicios--</option>
+      </select>
+
+      <button type="submit" class="btn">Confirmar Cita</button>
+    </form>
+  </div>
+
+  <script>
+    const serviceCards = document.querySelectorAll('.service-card');
+    const hiddenInput = document.getElementById('servicios');
+
+    function getServiciosSeleccionados() {
+      return Array.from(document.querySelectorAll('.service-card.active'))
+                  .map(card => card.getAttribute('data-id'));
+    }
+
+    function cargarHorarios() {
+      const barbero = document.getElementById("barbero").value;
+      const servicios = getServiciosSeleccionados();
+
+      const select = document.getElementById("fecha_hora");
+      if (!barbero || servicios.length === 0) {
+        select.innerHTML = '<option value="">--Selecciona barbero y servicios--</option>';
+        return;
+      }
+
+      fetch(`/api/horarios/?barbero=${barbero}&` + new URLSearchParams({ "servicios[]": servicios }))
+        .then(r => r.json())
+        .then(data => {
+          select.innerHTML = '<option value="">--Selecciona--</option>';
+          if (data.length === 0) {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "No hay horarios disponibles";
+            select.appendChild(opt);
+          } else {
+            data.forEach(h => {
+              const opt = document.createElement("option");
+              opt.value = h.id;
+              opt.textContent = h.texto;
+              select.appendChild(opt);
+            });
+          }
+        });
+    }
+
+    function actualizarResumen() {
+      let totalPrecio = 0, totalDuracion = 0;
+      const seleccionados = document.querySelectorAll('.service-card.active');
+
+      seleccionados.forEach(card => {
+        totalPrecio += parseFloat(card.getAttribute("data-precio"));
+        totalDuracion += parseInt(card.getAttribute("data-duracion"));
+      });
+
+      if (seleccionados.length > 0) {
+        document.getElementById("resumen").classList.add("visible");
+        document.getElementById("total-precio").textContent = totalPrecio.toFixed(2);
+        document.getElementById("total-duracion").textContent = totalDuracion;
+        hiddenInput.value = getServiciosSeleccionados().join(",");
+      } else {
+        document.getElementById("resumen").classList.remove("visible");
+        hiddenInput.value = "";
+      }
+
+      cargarHorarios();
+    }
+
+    // Eventos dinámicos
+    serviceCards.forEach(card => {
+      card.addEventListener("click", () => {
+        card.classList.toggle("active");
+        actualizarResumen();
+      });
+    });
+
+    document.getElementById("barbero").addEventListener("change", cargarHorarios);
+
+    // 🔔 Mostrar SweetAlert solo si ?agendada=1
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('agendada') === '1') {
+      Swal.fire({
+        icon: 'success',
+        title: '¡Éxito!',
+        text: 'Tu cita ha sido agendada con éxito.',
+        confirmButtonColor: '#FFD700'
+      });
+      history.replaceState(null, '', window.location.pathname); // limpia la URL
+    }
+  </script>
+</body>
+</html>

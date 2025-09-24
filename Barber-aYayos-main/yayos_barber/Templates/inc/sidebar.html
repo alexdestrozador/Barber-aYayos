@@ -1,0 +1,71 @@
+{% load static%}
+
+<nav id="sidebar">
+  <ul class="list-unstyled components">
+    <!-- Dashboard -->
+    <li class="dropdown">
+      <a href="{% url 'panel_control' %}" class="dashboard">
+        <i class="fas fa-tachometer-alt"></i><span> Dashboard</span>
+      </a>
+    </li>
+
+    <!-- Servicios -->
+    <li class="dropdown">
+      <a href="#submenuServicios" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+        <i class="fas fa-cut"></i><span> Servicios</span>
+      </a>
+      <ul class="collapse list-unstyled menu" id="submenuServicios">
+        <li><a href="{% url 'nuevo_servicio' %}">Agregar servicio</a></li>
+        <li><a href="{% url 'lista_servicios' %}">Administrar servicio</a></li>
+      </ul>
+    </li>
+    
+    <li class="dropdown">
+      <a href="{% url 'lista_clientes' %}" class="dashboard">
+        <i class="fas fa-tachometer-alt"></i><span> Lista de Clientes</span>
+      </a>
+    </li>
+    
+
+    
+    <!-- Ajuste de Páginas -->
+    <li class="dropdown">
+      <a href="#submenuPaginas" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+        <i class="fas fa-file-alt"></i><span> Ajuste de Páginas</span>
+      </a>
+      <ul class="collapse list-unstyled menu" id="submenuPaginas">
+        <li><a href="{% url 'quienes_somos' %}">¿Quiénes somos?</a></li>
+      </ul>
+    </li>
+
+    <!-- Citas -->
+    <li class="dropdown">
+      <a href="#submenuCitas" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+        <i class="fas fa-calendar-check"></i><span> Citas</span>
+      </a>
+      <ul class="collapse list-unstyled menu" id="submenuCitas">
+        <li><a href="{% url 'historial_citas_admin' %}">Historial de citas</a></li>
+      </ul>
+    </li>
+
+    <!-- Barberos -->
+    <li class="dropdown">
+      <a href="#submenuBarberos" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+        <i class="fas fa-user-tie"></i><span> Barberos</span>
+      </a>
+      <ul class="collapse list-unstyled menu" id="submenuBarberos">
+        <li><a href="{% url 'nuevo_barbero' %}">Agregar Barbero</a></li>
+        <li><a href="{% url 'lista_barberos' %}">Lista de Barberos</a></li>
+        <li><a href="{% url 'lista_horarios' %}">Gestión de Horario de Barberos</a></li>
+      </ul>
+    </li>
+
+    <!-- Finanzas -->
+
+    <li class="dropdown">
+      <a href="#" class="dashboard">
+        <i class="fas fa-dollar-sign"></i><span> Finanzas</span>
+      </a>
+    </li>
+  
+</nav>

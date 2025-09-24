@@ -1,0 +1,87 @@
+{% load static %}
+{% include "inc/header.html" %}
+
+<link rel="stylesheet" href="{% static 'Css/custom.css' %}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<div class="main-wrapper">
+    {% include "inc/topbar.html" %}
+    {% include "inc/sidebar.html" %}
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            
+            <!-- ====== Breadcrumb ====== -->
+            <div class="row page-titles d-flex align-items-center">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-themecolor m-0">Días Laborales</h3>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'lista_barberos' %}">Barberos</a>
+                        </li>
+                        <li class="breadcrumb-item active">Asignar Días Laborales</li>
+                    </ol>
+                </div>
+            </div>
+            <!-- ======================= -->
+
+            <!-- ====== Formulario ====== -->
+            <div class="form-wrapper">
+                <div class="form-card">
+                    <h2 class="form-title">Asignar Días Laborales a un Barbero</h2>
+
+                    {% for message in messages %}
+                        <p style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">
+                            {{ message }}
+                        </p>
+                    {% endfor %}
+
+                    {% if barberos %}
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="form-group">
+                            <label for="barbero_id">Selecciona Barbero:</label>
+                            <select name="barbero_id" id="barbero_id" required>
+                                <option value="">--Selecciona--</option>
+                                {% for b in barberos %}
+                                    <option value="{{ b.id }}">{{ b.user.get_full_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="fechas">Selecciona Fechas:</label>
+                            <input type="text" name="fechas" id="fechas" placeholder="Selecciona fechas" required>
+                        </div>
+
+                        <div class="form-actions">
+                            <a href="{% url 'lista_barberos' %}" class="btn-secondary">Volver</a>
+                            <button type="submit" class="btn-gold">Guardar</button>
+                        </div>
+                    </form>
+                    {% else %}
+                        <p>No hay barberos registrados.</p>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- ======================= -->
+
+        </div>
+    </div>
+</div>
+
+{% include "inc/footer.html" %}
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+flatpickr("#fechas", {
+    mode: "multiple",
+    minDate: "today", // no permitir fechas pasadas
+    dateFormat: "Y-m-d"
+});
+</script>
+
+
+
+

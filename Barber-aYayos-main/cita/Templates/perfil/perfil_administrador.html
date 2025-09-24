@@ -1,0 +1,258 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil del Administrador</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            background-color: #111; /* fondo negro */
+            color: #FFD700; /* dorado */
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .card {
+            background-color: #1a1a1a; /* gris oscuro */
+            border: 2px solid #FFD700; /* borde dorado */
+            color: #FFD700;
+        }
+
+        .form-label {
+            color: #FFD700;
+        }
+
+        .form-control {
+            background-color: #000;
+            border: 1px solid #FFD700;
+            color: #FFD700;
+        }
+
+        .form-control:focus {
+            background-color: #111;
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            box-shadow: 0 0 5px #FFD700;
+        }
+
+        .btn-primary {
+            background-color: #FFD700;
+            color: #000;
+            border: none;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background-color: #e6c200;
+            color: #000;
+        }
+
+        .btn-outline-secondary {
+            border: 1px solid #FFD700;
+            color: #FFD700;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #FFD700;
+            color: #000;
+        }
+
+        .btn-outline-danger {
+            border: 1px solid #ff4d4d;
+            color: #ff4d4d;
+        }
+
+        .btn-outline-danger:hover {
+            background-color: #ff4d4d;
+            color: #fff;
+        }
+
+        .swal-custom-popup {
+            border: 2px solid #FFD700;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .btn-volver {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: #FFD700;
+    color: #000;
+    border: none;
+    padding: 10px 15px;
+    font-weight: bold;
+    border-radius: 8px;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: background-color 0.3s;
+    text-decoration: none;
+}
+
+.btn-volver:hover {
+    background-color: #e6c200;
+    color: #000;
+    text-decoration: none;
+}
+
+    </style>
+</head>
+
+<body>
+{% include "inc/header.html" %}
+<a href="{% url 'panel_admin' %}" 
+   class="btn btn-volver">
+    <i class="fas fa-arrow-left"></i> Volver
+</a>
+
+<div class="container mt-5 pt-3">
+    <div class="card shadow-lg rounded-4">
+        <div class="card-body">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <!-- Perfil -->
+                    <div class="col-md-4 text-center">
+                        {% if form.instance.foto %}
+                            <img src="{{ form.instance.foto.url }}" id="form-avatar" class="img-thumbnail rounded-circle" width="200" height="200">
+<input type="file" name="foto" id="id_foto" class="form-control">
+                        {% else %}
+                            <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" 
+                                 class="img-thumbnail rounded-circle shadow-sm border border-warning" 
+                                 width="200" height="200" alt="Avatar">
+                        {% endif %}
+                        <h6 class="mt-3 text-muted">Actualizar foto</h6>
+                        {{ form.foto }}
+                    </div>
+
+                    <!-- Datos -->
+                    <div class="col-md-8">
+                        <h3 class="mb-3">
+                            Perfil del Administrador
+                            <button type="button" class="btn btn-outline-secondary btn-sm ms-2" id="editar-btn">
+                                <i class="fas fa-pencil-alt"></i> Editar
+                            </button>
+                        </h3>
+                        <hr>
+
+                        <div class="mb-3">
+                            <label class="form-label text-warning"><strong>Correo electrónico</strong></label>
+                            <input type="email" id="email" class="form-control bg-dark text-light border-warning" 
+                            value="{{ request.user.email }}" readonly>
+                        </div>
+
+
+                        <div class="mb-3">
+    <label class="form-label"><strong>Nueva contraseña</strong></label>
+    <div class="input-group">
+        <input type="password" name="password" id="id_password" 
+               class="form-control" placeholder="Nueva contraseña" readonly>
+        <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+            <i class="fas fa-eye"></i>
+        </button>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label class="form-label"><strong>Confirmar contraseña</strong></label>
+    <div class="input-group">
+        <input type="password" name="password2" id="id_password2" 
+               class="form-control" placeholder="Confirmar contraseña" readonly>
+        <button type="button" class="btn btn-outline-secondary" id="togglePassword2">
+            <i class="fas fa-eye"></i>
+        </button>
+    </div>
+</div>
+
+{% if error_password %}
+    <div class="text-danger mb-3">
+        {{ error_password }}
+    </div>
+{% endif %}
+
+
+
+                        <button type="submit" class="btn btn-primary mt-3 px-4" id="guardar-btn" disabled>
+                            <i class="fa fa-save"></i> Guardar cambios
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    // Función para mostrar/ocultar contraseña
+const togglePassword = document.getElementById('togglePassword');
+const password = document.getElementById('id_password');
+
+togglePassword.addEventListener('click', () => {
+    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+    password.setAttribute('type', type);
+    togglePassword.innerHTML = type === 'password' 
+        ? '<i class="fas fa-eye"></i>' 
+        : '<i class="fas fa-eye-slash"></i>';
+});
+
+const togglePassword2 = document.getElementById('togglePassword2');
+const password2 = document.getElementById('id_password2');
+
+togglePassword2.addEventListener('click', () => {
+    const type = password2.getAttribute('type') === 'password' ? 'text' : 'password';
+    password2.setAttribute('type', type);
+    togglePassword2.innerHTML = type === 'password' 
+        ? '<i class="fas fa-eye"></i>' 
+        : '<i class="fas fa-eye-slash"></i>';
+});
+
+    // Botón editar / cancelar
+    const editarBtn = document.getElementById('editar-btn');
+    const guardarBtn = document.getElementById('guardar-btn');
+    let editando = false;
+
+   editarBtn.addEventListener('click', function () {
+    const inputs = document.querySelectorAll('.form-control');
+    if (!editando) {
+        inputs.forEach(input => {
+            if(input.id !== 'email'){  // Excluye el correo
+                input.removeAttribute('readonly');
+            }
+        });
+        guardarBtn.disabled = false;
+        editarBtn.innerHTML = '<i class="fas fa-times"></i> Cancelar';
+        editarBtn.classList.replace("btn-outline-secondary", "btn-outline-danger");
+        editando = true;
+    } else {
+        inputs.forEach(input => input.setAttribute('readonly', true));
+        guardarBtn.disabled = true;
+        editarBtn.innerHTML = '<i class="fas fa-pencil-alt"></i> Editar';
+        editarBtn.classList.replace("btn-outline-danger", "btn-outline-secondary");
+        editando = false;
+    }
+});
+
+</script>
+
+{% if messages %}
+<script>
+    {% for message in messages %}
+        Swal.fire({
+            title: '{{ message }}',
+            icon: '{{ message.tags }}' === 'error' ? 'error' : 'success',
+            background: '#111',
+            color: '#FFD700',
+            confirmButtonColor: '#FFD700',
+            confirmButtonText: 'OK',
+            customClass: {
+                popup: 'swal-custom-popup'
+            }
+        });
+    {% endfor %}
+</script>
+{% endif %}
+
+
+{% include 'inc/footer.html' %}

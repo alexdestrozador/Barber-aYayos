@@ -1,0 +1,40 @@
+
+
+<h2>Mis Finanzas</h2>
+<p>Este es tu historial de comisiones del mes actual.</p>
+
+<div class="card shadow-sm p-3 mb-4">
+  <table class="table table-hover">
+    <thead class="table-dark">
+      <tr>
+        <th>Fecha</th>
+        <th>Cliente</th>
+        <th>Servicio</th>
+        <th>Precio Total</th>
+        <th>Mi Comisión</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for finanza in finanzas %}
+        {% if finanza.comision_barbero %}
+        <tr>
+          <td>{{ finanza.cita.inicio|date:"d/m/Y H:i" }}</td>
+          <td>{{ finanza.cita.cliente.user.get_full_name }}</td>
+          <td>{{ finanza.cita.servicio.nombre }}</td>
+          <td>${{ finanza.monto_total }}</td>
+          <td>${{ finanza.comision_barbero }}</td>
+        </tr>
+        {% endif %}
+      {% empty %}
+        <tr>
+          <td colspan="5" class="text-center">No tienes finanzas registradas este mes</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="card p-3 shadow-sm">
+  <h4 class="mb-0">Total del mes: <strong>${{ total_mes }}</strong></h4>
+</div>
+

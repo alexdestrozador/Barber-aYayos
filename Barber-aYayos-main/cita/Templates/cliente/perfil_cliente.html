@@ -1,0 +1,225 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Perfil del Cliente</title>
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="{% static 'Css/bootstrap.css' %}">
+  <link rel="stylesheet" href="{% static 'Css/perfil_cliente.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    .avatar-circle {
+      width: 90px; height: 90px;
+      background: linear-gradient(135deg, #f5d06c, #e0b84f);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; font-weight: bold; color: #111;
+      margin: auto;
+    }
+    .card-shadow-lg {
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      border-radius: 12px;
+      transition: transform 0.2s ease-in-out;
+    }
+    .card-shadow-lg:hover { transform: scale(1.01); }
+    .text-gold { color: #f5d06c; }
+    .agenda { background: #f5d06c; color: #111; border-radius: 8px; font-weight: bold; }
+    .agenda:hover { background: #e0b84f; }
+
+    .estado-confirmada { color: #ffc107; font-weight: bold; }
+    .estado-completada { color: #28a745; font-weight: bold; }
+    .estado-cancelada { color: #dc3545; font-weight: bold; }
+
+    .resumen { display: flex; gap: 20px; justify-content: center; margin-bottom: 25px; }
+    .resumen .box {
+      flex: 1; background: #111; color: #f5d06c;
+      text-align: center; padding: 20px;
+      border-radius: 10px;
+    }
+    .resumen .box h3 { margin: 0; font-size: 28px; }
+    .resumen .box p { margin: 0; font-size: 14px; }
+  </style>
+</head>
+
+<body>
+  <div class="container py-5">
+
+    <!-- Perfil -->
+    <div class="card card-shadow-lg mb-4 bg-dark text-light">
+      <div class="row g-0 align-items-center">
+        <div class="col-md-3 text-center py-4">
+          <div class="avatar-circle">{{ cliente.user.first_name|first|upper }}</div>
+        </div>
+        <div class="col-md-9">
+          <div class="card-body">
+            <div class="d-flex justify-content-end gap-2 mb-3">
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button class="btn btn-danger"><i class="bi bi-box-arrow-right"></i> Cerrar Sesión</button>
+              </form>
+            </div>
+            <h2 class="card-title mb-2 text-gold">¡Hola, {{ cliente.user.first_name }}!</h2>
+            <div class="row">
+              <div class="col-md-6 mb-2">
+                <i class="bi bi-person"></i> <strong>Nombre:</strong> {{ cliente.user.first_name }}<br>
+                <i class="bi bi-envelope"></i> <strong>Correo:</strong> {{ cliente.user.email }}
+              </div>
+              <div class="col-md-6 mb-2">
+                <i class="bi bi-phone"></i> <strong>Teléfono:</strong> {{ cliente.telefono }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumen -->
+    <div class="resumen">
+      <div class="box">
+        <h3>{{ citas|length }}</h3>
+        <p>Total Citas</p>
+      </div>
+      <div class="box">
+        {% if proxima_cita %}
+          <h3>{{ proxima_cita.inicio|date:"d/m" }}</h3>
+        {% else %}
+          <h3>—</h3>
+        {% endif %}
+        <p>Próxima Cita</p>
+      </div>
+      <div class="box">
+        <h3>{{ completadas_count }}</h3>
+        <p>Completadas</p>
+      </div>
+    </div>
+
+    <!-- Citas -->
+    <div class="card card-shadow-lg">
+      <div class="card-header bg-dark text-light d-flex justify-content-between align-items-center">
+        <h4 class="mb-0"><i class="bi bi-calendar-event"></i> Citas Agendadas</h4>
+        <a href="{% url 'agendar_cita_nuevo' %}" class="btn agenda"><i class="bi bi-calendar-check"></i> Agendar cita</a>
+      </div>
+      <div class="card-body p-0">
+        {% if citas %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-dark">
+                <tr>
+                  <th>Fecha</th>
+                  <th>Hora</th>
+                  <th>Servicios</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for cita in citas %}
+                  <tr>
+                    <td>{{ cita.inicio|date:"d/m/Y" }}</td>
+                    <td>{{ cita.inicio|time:"H:i" }}</td>
+                    <td>
+                      {% for s in cita.servicios.all %}
+                        {{ s.nombre }}{% if not forloop.last %}, {% endif %}
+                      {% endfor %}
+                    </td>
+                    <td>
+                      <span class="estado-{{ cita.estado }}">
+                        {{ cita.get_estado_display }}
+                      </span>
+                    </td>
+                    <td>
+                      <!-- Botón Eliminar (solo para completadas) -->
+                      {% if cita.estado == "completada" %}
+                        <a href="{% url 'eliminar_cita' cita.id %}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="confirmarAccion(event, this.href, '¿Seguro que quieres eliminar esta cita?', 'Sí, eliminar', 'Eliminada')">
+                          <i class="bi bi-trash3"></i> Eliminar
+                        </a>
+                      {% else %}
+                        <button class="btn btn-sm btn-danger" disabled title="Solo puedes eliminar citas completadas">
+                          <i class="bi bi-trash3"></i> Eliminar
+                        </button>
+                      {% endif %}
+
+                      <!-- Botón Cancelar (solo confirmadas y +2 horas) -->
+                      {% if cita.estado == "confirmada" %}
+                        {% if cita.inicio|date:"U"|add:"-7200"|floatformat:0 > ahora|date:"U"|floatformat:0 %}
+                          <a href="{% url 'cancelar_cita' cita.id %}" class="btn btn-sm btn-warning"
+                             onclick="confirmarAccion(event, this.href, '¿Seguro que quieres cancelar esta cita?', 'Sí, cancelar', 'Cancelada')">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                          </a>
+                        {% else %}
+                          <button class="btn btn-sm btn-warning" disabled title="No puedes cancelar a menos de 2 horas">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                          </button>
+                        {% endif %}
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info text-center mb-0">
+            <i class="bi bi-info-circle"></i> No tienes citas agendadas.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <script src="{% static 'Js/bootstrap.bundle.js' %}"></script>
+
+  <script>
+    // Confirmación para cancelar/eliminar
+    function confirmarAccion(event, url, mensaje, textoConfirmar, accionTexto) {
+      event.preventDefault();
+      Swal.fire({
+        title: mensaje,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: textoConfirmar,
+        cancelButtonText: 'No, volver'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = url;
+        }
+      });
+    }
+
+    // SweetAlerts de éxito según parámetros en la URL (?agendada=1 o ?cancelada=1)
+    document.addEventListener("DOMContentLoaded", function () {
+      const params = new URLSearchParams(window.location.search);
+
+      if (params.has("agendada")) {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Cita agendada!',
+          text: 'Tu cita se registró correctamente.',
+          confirmButtonColor: '#28a745'
+        });
+      }
+
+      if (params.has("cancelada")) {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Cita cancelada!',
+          text: 'Tu cita ha sido cancelada con éxito.',
+          confirmButtonColor: '#ffc107'
+        });
+      }
+    });
+  </script>
+</body>
+</html>
+

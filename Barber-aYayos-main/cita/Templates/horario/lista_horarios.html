@@ -1,0 +1,138 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Horarios Registrados</title>
+    <link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    {% include "inc/header.html" %}
+
+    <div class="main-wrapper">
+        {% include "inc/topbar.html" %}
+        {% include "inc/sidebar.html" %}
+
+        <div class="page-wrapper">
+            <div class="container-fluid">
+
+                <!-- ====== Breadcrumb ====== -->
+                <div class="row page-titles d-flex align-items-center">
+                    <div class="col-md-5 align-self-center">
+                        <h3 class="text-themecolor m-0">Horarios</h3>
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'lista_barberos' %}">Barberos</a>
+                            </li>
+                            <li class="breadcrumb-item active">Horarios Registrados</li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- ======================= -->
+
+                <!-- ====== Contenido ====== -->
+                <div class="services-container">
+                    <div class="services-header">
+                        <h2>Horarios Registrados</h2>
+                        <a href="{% url 'nuevo_horario' %}" class="btn-gold">Agregar nuevo horario</a>
+                    </div>
+
+                    <div class="services-card">
+                        <table class="services-table">
+                            <thead>
+                                <tr>
+                                    <th>Barbero</th>
+                                    <th>Días Asignados</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% if barberos_con_horarios %}
+                                {% for barbero, dias in barberos_con_horarios.items %}
+                                <tr>
+                                    <td>{{ barbero.user.get_full_name }}</td>
+                                    <td>{{ dias|join:", " }}</td>
+                                    <td class="text-center">
+                                        <a href="#"
+   class="btn btn-sm btn-dark btn-eliminar"
+   data-url="{% url 'eliminar_horarios_barbero' barbero.id %}">
+   Eliminar todos
+</a>
+
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-light">No hay horarios registrados.</td>
+                                </tr>
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- ======================= -->
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ✅ Confirmación SIEMPRE activa -->
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".btn-eliminar").forEach(function(button) {
+            button.addEventListener("click", function(e) {
+                e.preventDefault();
+                let url = this.getAttribute("data-url");
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "Se eliminarán todos los horarios de este barbero",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+    });
+    </script>
+
+    <!-- ✅ Mensaje de éxito SOLO después de eliminar -->
+    {% if messages %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        {% for message in messages %}
+            {% if "eliminacion" in message.tags %}
+                Swal.fire({
+                    icon: 'warning',
+                    title: '¡Horarios eliminados!',
+                    text: '{{ message }}',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK'
+                });
+            {% else %}
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Asignación Exitosa!',
+                    text: '{{ message }}',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            {% endif %}
+        {% endfor %}
+    });
+</script>
+{% endif %}
+
+    {% include "inc/footer.html" %}
+</body>
+</html>

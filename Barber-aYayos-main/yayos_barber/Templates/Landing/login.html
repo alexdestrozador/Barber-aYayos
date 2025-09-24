@@ -1,0 +1,163 @@
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Yayo's Barber</title>
+
+    <!-- Iconos Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <!-- Estilo personalizado -->
+    <link rel="stylesheet" href="{% static 'Css/login.css' %}">
+</head>
+
+<body>
+  <a href="{% url 'landing' %}" class="btn-volver">
+    <i class="fas fa-arrow-left"></i> Volver
+  </a>
+
+  <div class="container" id="container">
+
+    <!-- Formulario de Registro -->
+    <div class="form-container sign-up">
+      <form method="POST" action="{% url 'registro_cliente' %}" id="form-registro" novalidate>
+        {% csrf_token %}
+        <h1>Crea tu cuenta</h1>
+
+    
+
+        {% if errores_generales or error_password %}
+  <div class="django-error-msg">
+    <ul>
+      {% for e in errores_generales %}
+        <li>{{ e }}</li>
+      {% endfor %}
+      {% if error_password %}
+        <li>{{ error_password }}</li>
+      {% endif %}
+    </ul>
+  </div>
+{% endif %}
+
+        <span>O usa tu email para registrarte</span>
+
+        <input type="text" name="username" id="login-username" placeholder="Nombre de usuario" value="{{ username|default:'' }}" required>
+
+        <input type="text" id="reg-nombre" name="nombre" placeholder="Nombre completo" value="{{ nombre|default:'' }}" required>
+        <div class="error-msg" id="error-nombre"></div>
+
+        <input type="email" id="reg-correo" name="correo" placeholder="Correo" value="{{ correo|default:'' }}" required>
+        <div class="error-msg" id="error-correo"></div>
+
+        <input type="text" id="reg-telefono" name="telefono" placeholder="Teléfono" value="{{ telefono|default:'' }}" required>
+        <div class="error-msg" id="error-telefono"></div>
+
+        <div class="password-wrapper">
+          <input type="password" id="reg-password" name="password" placeholder="Contraseña" required>
+          <i class="fas fa-eye toggle-password" data-target="reg-password"></i>
+        </div>
+        <div class="error-msg" id="error-password"></div>
+
+        <div class="password-wrapper">
+          <input type="password" id="reg-confirm-password" name="confirmar_password" placeholder="Confirmar contraseña" required>
+          <i class="fas fa-eye toggle-password" data-target="reg-confirm-password"></i>
+        </div>
+
+        {% if error_password %}
+          <div class="error-msg" id="error-confirm-password">{{ error_password }}</div>
+        {% else %}
+          <div class="error-msg" id="error-confirm-password"></div>
+        {% endif %}
+
+        <button type="submit">Registrarse</button>
+      </form>
+    </div>
+
+
+
+    <!-- Formulario de Login -->
+    <div class="form-container sign-in">
+      <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+        <h1>Inicia Sesión</h1>
+        {% if messages %}
+      <div class="django-error-msg">
+        <ul>
+          {% for message in messages %}
+            {% if "auth" in message.tags %}
+              <li>{{ message }}</li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+      
+
+        <span>O usa tu email y contraseña</span>
+
+        <input type="text" name="username" placeholder="Nombre de usuario" required>
+        <input type="password" name="password" placeholder="Contraseña" required>
+
+        <p><a href="{% url 'password_reset' %}">¿Olvidaste tu contraseña?</a></p>
+        <button type="submit">Iniciar Sesión</button>
+      </form>
+    </div>
+
+    <!-- Panel Toggle -->
+    <div class="toggle-container">
+      <div class="toggle">
+        <div class="toggle-panel toggle-left">
+          <h1>¡Bienvenido de nuevo!</h1>
+          <p>Ingresa tus datos personales y reserva tu cita</p>
+          <button type="button" class="hidden" id="login">Inicia Sesión</button>
+        </div>
+        <div class="toggle-panel toggle-right">
+          <h1>¡Hola, estimado cliente!</h1>
+          <p>Regístrate con tus datos personales y reserva una cita con nosotros</p>
+          <button type="button" class="hidden" id="register">Regístrate</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- Script de validación personalizada -->
+    <script src="{% static 'Js/login.js' %}"></script>
+
+    
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const toggles = document.querySelectorAll(".toggle-password");
+
+        toggles.forEach(icon => {
+            icon.addEventListener("click", function () {
+                const inputId = this.getAttribute("data-target");
+                const input = document.getElementById(inputId);
+
+                if (input.type === "password") {
+                    input.type = "text";
+                    this.classList.remove("fa-eye");
+                    this.classList.add("fa-eye-slash");
+                } else {
+                    input.type = "password";
+                    this.classList.remove("fa-eye-slash");
+                    this.classList.add("fa-eye");
+                }
+            });
+        });
+
+        {% if form_type == 'register' %}
+        document.getElementById("container").classList.add("right-panel-active");
+        {% endif %}
+    });
+
+    
+</script>
+
+</body>
+</html>

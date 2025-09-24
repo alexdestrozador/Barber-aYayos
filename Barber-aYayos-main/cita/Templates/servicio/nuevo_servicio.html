@@ -1,0 +1,129 @@
+ {% load static %}
+{% include "inc/header.html" %}
+
+
+<link rel="stylesheet" href="{% static 'Css/custom.css' %}">
+
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+  <div class="main-wrapper">
+  
+
+	  {% include "inc/topbar.html" %}
+
+
+
+    {% include "inc/sidebar.html" %}
+	
+	<div class="page-wrapper">
+        <!-- ============================================================== -->
+        <!-- Container fluid  -->
+        <!-- ============================================================== -->
+        <div class="container-fluid">
+          <!-- ============================================================== -->
+          <!-- Bread crumb and right sidebar toggle -->
+          <!-- ============================================================== -->
+          <div class="row page-titles d-flex align-items-center">
+            <div class="col-md-5 align-self-center">
+              <h3 class="text-themecolor m-0">Servicios</h3>
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="">Administrador</a>
+                </li>
+                <li class="breadcrumb-item active">Agregar Nuevo Servicio</li>
+              </ol>
+            </div>
+          </div>
+{% if error %}
+    <div class="alert-message">{{ error }}</div>
+{% endif %}
+
+{% if messages %}
+<div class="messages" id="mensaje-exito">
+    {% for message in messages %}
+        <p style="color: green;">{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="form-wrapper">
+    <div class="form-card">
+        <h2 class="form-title">Registrar Servicio</h2>
+
+        <form method="POST" class="service-form" id="form-servicio">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="nombre">Nombre de Servicio *</label>
+                <input type="text" name="nombre" id="nombre" maxlength="30" required 
+                       onblur="validarCampo(this)" value="{{ form_data.nombre|default:'' }}">
+                <p id="error-nombre" style="display:none; color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
+                    Llena este campo. ¡Es obligatorio!
+                </p>
+                {% if errores.nombre %}
+                <p style="color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
+                    {{ errores.nombre }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción</label>
+                <input type="text" name="descripcion" id="descripcion" 
+                       value="{{ form_data.descripcion|default:'' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="precio">Precio *</label>
+                <input type="number" step="0.01" name="precio" id="precio" required 
+                       onblur="validarCampo(this)" value="{{ form_data.precio|default:'' }}">
+                <p id="error-precio" style="display:none; color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
+                    Ingrese por favor un valor válido
+                </p>
+                {% if errores.precio %}
+                <p style="color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
+                    {{ errores.precio }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="duracion">Duración (minutos) *</label>
+                <input type="number" name="duracion" id="duracion" required 
+                       onblur="validarCampo(this)" max="99999" value="{{ form_data.duracion|default:'' }}">
+                <p id="error-duracion-obligatorio" style="display:none; color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
+                    Llena este campo. ¡Es obligatorio!
+                </p>
+                <p id="error-duracion-invalido" style="display:none; color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
+                    Debe ingresar una duración válida mayor a 0
+                </p>
+                {% if errores.duracion %}
+                <p style="color:#f8d7da; background:#2c2c2c; padding:8px 12px; border-left:4px solid #b00020; margin-top:5px; border-radius:4px; font-size:0.95rem;">
+                    {{ errores.duracion }}
+                </p>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'lista_servicios' %}" class="btn-secondary">Volver</a>
+                <button type="submit" class="btn-gold">Guardar Servicio</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+            <script src="{% static 'Js/cruds.js' %}"></script>    
+            <script>
+                setTimeout(function() {
+                    const mensaje = document.getElementById('mensaje-exito');
+                    if (mensaje) {
+                        mensaje.style.display = 'none';
+                    }
+                }, 5000);
+            </script>
+        </div>
+    </div>
+
+{% include "inc/footer.html" %}
+

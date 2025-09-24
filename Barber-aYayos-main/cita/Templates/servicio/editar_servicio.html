@@ -1,0 +1,61 @@
+{% load static %}
+    <link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+    <link rel="stylesheet" href="{% static 'Css/bootstrap.css' %}">
+
+     {% include "inc/header.html" %}
+
+    <div class="form-wrapper"> 
+        <div class="form-card">
+            <h2 class="form-title">Editar Servicio</h2>
+
+            {% if error %}
+                <div class="alert-message">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" class="service-form">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="nombre">Nombre *</label>
+                    <input type="text" name="nombre" id="nombre" maxlength="100" required value="{{ servicio.nombre }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción *</label>
+                    <input type="text" name="descripcion" id="descripcion" maxlength="255" required value="{{ servicio.descripcion }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="precio">Precio *</label>
+                    <input type="number" step="0.01" name="precio" id="precio" required value="{{ servicio.precio }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="duracion">Duración (minutos) *</label>
+                    <input type="number" name="duracion" id="duracion" required value="{{ servicio.duracion }}">
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'lista_servicios' %}" class="btn-secondary">Volver</a>
+                    <button type="submit" class="btn-gold">Actualizar Servicio</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if messages %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    {% for message in messages %}
+        Swal.fire({
+            icon: '{% if "success" in message.tags %}success{% else %}info{% endif %}',
+            title: '{{ message }}',
+            confirmButtonColor: '#FFD700',
+            confirmButtonText: 'Aceptar'
+        });
+    {% endfor %}
+</script>
+{% endif %}
+
+
+    {% include "inc/footer.html" %}

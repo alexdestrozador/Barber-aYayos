@@ -1,0 +1,53 @@
+
+
+<h2>Gestión de Finanzas</h2>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Cita</th>
+      <th>Cliente</th>
+      <th>Barbero</th>
+      <th>Servicio</th>
+      <th>Precio</th>
+      <th>Estado</th>
+      <th>Ajustar Comisión</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for finanza in finanzas %}
+      <tr>
+        <td>{{ finanza.cita.id }}</td>
+        <td>{{ finanza.cita.cliente.user.get_full_name }}</td>
+        <td>{{ finanza.cita.barbero.user.get_full_name }}</td>
+        <td>{{ finanza.cita.servicio.nombre }}</td>
+        <td>${{ finanza.cita.servicio.precio }}</td>
+        <td>
+          {% if finanza.comision_barbero %}
+            ✅ Ajustada
+          {% else %}
+            ⏳ Pendiente
+          {% endif %}
+        </td>
+        <td>
+          {% if not finanza.comision_barbero %}
+            <form action="{% url 'ajustar_comision' finanza.id %}" method="post" class="d-flex">
+              {% csrf_token %}
+              <input type="number" name="porcentaje" min="0" max="100" step="0.1"
+                     placeholder="%" required class="form-control form-control-sm me-2">
+              <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+            </form>
+          {% else %}
+            <span>Barbero: ${{ finanza.comision_barbero }} <br> Barbería: ${{ finanza.ganancia_barberia }}</span>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="7" class="text-center">No hay finanzas pendientes.</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+

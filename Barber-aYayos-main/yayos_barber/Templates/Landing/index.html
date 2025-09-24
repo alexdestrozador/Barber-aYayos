@@ -1,0 +1,152 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Yayo's Barber</title>
+    <link rel="stylesheet" href="{% static 'Css/landing.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="hero">
+  <nav class="menu">
+    <div class="logo">
+      <a href="#reservar">
+        <img src="{% static 'img/logo.png' %}" alt="Yayo's Barber" style="height: 60px;">
+      </a>
+    </div>
+    <ul>
+        <li><a href="#quienesomos">Quienes Somos</a></li>
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="{% url 'login' %}">Reservar Cita</a></li>
+        <li><a href="#ubicacion">Ubicación</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+    </ul>
+
+    <div class="login-btn">
+        <a href="{% url 'login' %}">Iniciar sesión</a> 
+    </div>
+</nav>
+
+        <div class="contenido">
+            <h1>Bienvenidos a Yayo's Barber!</h1>
+
+<div class="separador"></div>
+
+<p class="descripcion">
+    Donde cada corte es una obra de arte. <br>
+    Experiencia, estilo, y detalles que hacen la diferencia. <br>
+</p>
+
+<div class="botones">
+    <a href="{% url 'login' %}" class="btn">¡HAZ TU RESERVA!</a>
+    <a href="#shop" class="btn secondary">EXPLORA LA TIENDA</a>
+</div>
+        </div>
+    </header>
+ 
+<section id="quienesomos" class="acerca-section">
+  {% if quienes_somos %}
+    <h2 class="acerca-titulo">{{ quienes_somos.titulo }}</h2>
+    <hr class="acerca-linea">
+    <p class="acerca-texto">{{ quienes_somos.descripcion }}</p>
+  {% else %}
+    <p>No hay contenido disponible.</p>
+  {% endif %}
+</section>
+
+<div id="mensaje-actualizado" style="display:none; color: green; margin-top: 10px;">
+  El contenido ha sido actualizado!
+</div>
+
+
+
+
+
+    <section id="servicios">
+    <h2 class="titulo">SERVICIOS</h2>
+    <div class="subtitulo">DESCUBRE Y RESERVA NUESTROS SERVICIOS EXCLUSIVOS, DISEÑADOS PARA TI<br>
+    ¡TRANSFORMA TU ESTILO CON ASESORÍA PERSONALIZADA!</div>
+
+    <div class="contenedor-servicios">
+        <div class="servicio">
+            <img src="{% static 'img/corte.png' %}" alt="Cabello">
+            <div class="overlay">
+                <span>VER +<br>TODOS LOS SERVICIOS</span>
+            </div>
+            <p><strong>SERVICIOS</strong><br>CABELLO</p>
+        </div>
+
+        <div class="servicio">
+            <img src="{% static 'img/barba.png' %}" alt="Barba">
+            <div class="overlay">
+                <span>VER +<br>TODOS LOS SERVICIOS</span>
+            </div>
+            <p><strong>SERVICIOS</strong><br>BARBA</p>
+        </div>
+
+        <div class="servicio">
+            <img src="{% static 'img/ceja.png' %}" alt="Productos">
+            <div class="overlay">
+                <span>VER +<br>TODOS LOS SERVICIOS</span>
+            </div>
+            <p><strong>PRODUCTOS</strong><br>CEJAS</p>
+        </div>
+    </div>
+
+    <p class="garantia">TODOS NUESTROS SERVICIOS CUENTAN CON GARANTÍA DE SATISFACCIÓN Y ASESORÍA POR PARTE DE UN PROFESIONAL.<br><strong>SI NO QUEDAS SATISFECHO CON TU SERVICIO, ES ¡GRATIS!</strong></p>
+</section>
+  
+    
+   <section id="ubicacion">
+    <h2 class="acerca-titulo">UBICACIÓN</h2>
+        
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3965.858350471545!2d-75.54801092684596!3d6.282344993706549!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e4428b6cbf60513%3A0x981b575b7f1c3ff!2sCra.%2036%20%23%2091-27%2C%20San%20Pablo%2C%20Medell%C3%ADn%2C%20Manrique%2C%20Medell%C3%ADn%2C%20Antioquia!5e0!3m2!1ses!2sco!4v1748134403317!5m2!1ses!2sco" width="100%" height="480" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+      
+
+   <section id="contacto">
+    <h2 class="acerca-titulo">CONTACTO</h2></section>
+    <footer style="background-color: #000; color: white; padding: 40px 20px; font-family: Arial, sans-serif;">
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-around; text-align: center;">
+
+    <!-- Ubicación 1 -->
+    <div style="flex: 1; min-width: 250px; margin-bottom: 20px;">
+      <h3 style="margin-bottom: 10px;">YAYO'S BARBER®</h3>
+     
+      <a href="https://www.google.com/maps/search/Cra.+36+%2391-27,+San+Pablo,+Medell%C3%ADn,+Antioquia" target="_blank" style="color: #00ff90;">Ver en Google Maps</a><br>
+      <strong>¿Necesitas ayuda?</strong><br>
+      <a href="https://wa.me/573504567890" target="_blank" style="color: #00ff90;">Llama al 350 456 7890 o escribe aquí 💬</a>
+    </div>
+
+    <!-- Horarios -->
+    <div style="flex: 1; min-width: 250px; margin-bottom: 20px;">
+      <h3 style="margin-bottom: 10px;">HORARIO DE ATENCIÓN</h3>
+      <p>
+       Domingo<br>
+        a<br>
+        Domingo <br>
+         <strong>de 8:00 AM A 20.00 PM</strong>
+      </p>
+    </div>
+
+    <!-- Ubicación 2 (opcional) -->
+    <div style="flex: 1; min-width: 250px; margin-bottom: 20px;">
+      <h3 style="margin-bottom: 10px;">YAYO'S BARBER®</h3>
+      <a href="https://www.google.com/maps/search/Calle+44+%2370-30,+Medell%C3%ADn" target="_blank" style="color: #00ff90;">Ver en Google Maps</a><br>
+      <strong>¿Necesitas ayuda?</strong><br>
+      <a href="https://wa.me/573005432100" target="_blank" style="color: #00ff90;">Llama al ? o escribe aquí 💬</a>
+    </div>
+
+  </div>
+
+  <!-- Íconos sociales opcionales -->
+  <div style="text-align: center; margin-top: 20px;">
+    <a href="#" style="margin: 0 10px; color: white;">Instagram</a>
+    <a href="#" style="margin: 0 10px; color: white;">Facebook</a>
+    <a href="#" style="margin: 0 10px; color: white;">TikTok</a>
+
+    </div>
+  </div>
+</footer>
+
+

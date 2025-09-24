@@ -1,0 +1,81 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Error - Sin barberos</title>
+    <link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+    <style>
+        .alert-box {
+            max-width: 600px;
+            margin: 100px auto;
+            padding: 30px;
+            background: #1c1c1c; /* fondo oscuro */
+            border-left: 8px solid #FFD700; /* dorado */
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0px 4px 15px rgba(0,0,0,0.5);
+            color: #fff;
+        }
+        .alert-box h2 {
+            color: #FFD700; /* dorado */
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+        }
+        .alert-box p {
+            color: #ddd;
+            margin-bottom: 25px;
+        }
+        .alert-box .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 0 10px;
+        }
+        .btn-gold {
+            background: #FFD700;
+            color: #000;
+        }
+        .btn-gold:hover {
+            background: #e6c200;
+        }
+        .btn-gray {
+            background: #6c757d;
+            color: white;
+        }
+        .btn-gray:hover {
+            background: #5a6268;
+        }
+        .alert-icon {
+            font-size: 50px;
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    {% include "inc/header.html" %}
+
+    <div class="alert-box">
+        <div class="alert-icon">⚠️</div>
+        <h2>¡No tienes barberos registrados!</h2>
+        <p>Registra un barbero e inténtalo nuevamente.</p>
+        <div class="text-center mt-4">
+    <a href="{% url 'nuevo_barbero' %}" 
+       class="btn" 
+       style="background-color: #FFD700; color: black; border: none; font-weight: bold;">
+        Registrar Barbero
+    </a>
+    <a href="{% url 'lista_horarios' %}" 
+       class="btn" 
+       style="background-color: white; color: black; border: 1px solid #ccc; font-weight: bold;">
+        Volver
+    </a>
+</div>
+    </div>
+
+    {% include "inc/footer.html" %}
+</body>
+</html>

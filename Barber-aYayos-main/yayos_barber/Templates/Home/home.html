@@ -1,0 +1,25 @@
+{% load static %}
+{% include "inc/header.html" %}
+
+<div class="container mt-5 pt-5" style="margin-left: 230px;">
+    <div class="text-center bg-light p-5 rounded-4 shadow" style="max-width: 600px; margin: 0 auto;">
+        <h1 class="display-5 fw-bold">¡Bienvenido, Administrador!</h1>
+        <p class="lead text-muted">Nos alegra tenerte aquí. Gestiona fácilmente los servicios, citas y más desde tu panel de control.</p>
+        <a href="{% url 'panel_control' %}" class="btn btn-warning">Gestionar</a>
+    </div>
+</div>
+
+
+
+{% include "inc/topbar.html" %}
+
+
+
+       
+          {% include "inc/sidebar.html" %}
+	 
+
+
+
+{% include "inc/footer.html" %}
+

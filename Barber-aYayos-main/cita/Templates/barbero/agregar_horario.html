@@ -1,0 +1,199 @@
+{% load static %}
+{% include "inc/headerb.html" %}
+
+<style>
+    /* 🎨 Estilos negro y dorado */
+    .form-wrapper {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-top: 30px;
+        flex-wrap: wrap; /* Para que en pantallas pequeñas se acomoden uno debajo del otro */
+    }
+
+    .form-card {
+        background-color: #111; /* negro profundo */
+        color: #f5d06c; /* dorado */
+        border: 1px solid #f5d06c;
+        border-radius: 15px;
+        padding: 30px;
+        width: 100%;
+        max-width: 500px;
+        box-shadow: 0 0 15px rgba(245, 208, 108, 0.4);
+    }
+
+    .form-card h2, .form-card h3 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #f5d06c;
+        font-weight: bold;
+    }
+
+    .form-card label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+        color: #f5d06c;
+    }
+
+    .form-card select, 
+    .form-card input[type="time"] {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border-radius: 8px;
+        border: 1px solid #f5d06c;
+        background-color: #222;
+        color: #fff;
+        font-size: 14px;
+    }
+
+    .form-card button {
+        margin-top: 20px;
+        width: 100%;
+        background-color: #f5d06c;
+        color: #111;
+        font-weight: bold;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .form-card button:hover {
+        background-color: #e6c259;
+        transform: scale(1.05);
+    }
+
+    .form-card p {
+        margin-top: 10px;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    /* 📋 Tabla scrollable */
+    .scroll-table {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .scroll-table thead tr {
+        position: sticky;
+        top: 0;
+        background: #111;
+    }
+
+    .scroll-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .scroll-table th,
+    .scroll-table td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    .scroll-table tr {
+        border-bottom: 1px solid #333;
+    }
+
+    .estado-disponible {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .estado-ocupado {
+        color: #ff4d4d;
+        font-weight: bold;
+    }
+</style>
+
+<div class="main-wrapper">
+    {% include "inc/topbarb.html" %}
+    {% include "inc/sidebarb.html" %}
+
+    <div class="page-wrapper">
+        <div class="container-fluid">
+            
+            <!-- Encabezado -->
+              
+            <div class="row page-titles d-flex align-items-center">
+                <div class="col-md-5 align-self-center">
+                    <h3 class="text-themecolor m-0">Gestionar mi horario</h3>
+                   <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="">Barbero</a>
+                </li>
+                <li class="breadcrumb-item active">Gestionar horario</li>
+              </ol>
+                </div>
+
+            <!-- Contenido principal -->
+            <div class="form-wrapper">
+                
+                <!-- Formulario -->
+                <div class="form-card">
+                    <h2>Agregar Horarios</h2>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <label for="dia_laboral">Selecciona Día:</label>
+                        <select name="dia_laboral" id="dia_laboral" required>
+                            <option value="">--Selecciona--</option>
+                            {% for d in dias_laborales %}
+                                <option value="{{ d.id }}">{{ d.fecha|date:"d/m/Y" }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="hora_inicio">Hora Inicio:</label>
+                        <input type="time" name="hora_inicio" id="hora_inicio" required>
+
+                        <label for="hora_fin">Hora Fin:</label>
+                        <input type="time" name="hora_fin" id="hora_fin" required>
+
+                        <button type="submit">Agregar Horario</button>
+                    </form>
+
+                    {% for message in messages %}
+                        <p style="color: {% if message.tags == 'error' %}#ff4d4d{% else %}#28a745{% endif %};">
+                            {{ message }}
+                        </p>
+                    {% endfor %}
+                </div>
+
+                <!-- Horarios existentes -->
+                <div class="form-card scroll-table">
+                    <h2>Horarios Existentes</h2>
+                    {% if horarios %}
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Día</th>
+                                    <th>Hora</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for h in horarios %}
+                                    <tr>
+                                        <td>{{ h.dia_laboral.fecha|date:"d/m/Y" }}</td>
+                                        <td>{{ h.fecha_hora|date:"H:i" }}</td>
+                                        <td class="{% if h.disponible %}estado-disponible{% else %}estado-ocupado{% endif %}">
+                                            {% if h.disponible %}Disponible{% else %}Ocupado{% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% else %}
+                        <p style="text-align:center; color:#ddd;">No hay horarios agregados aún.</p>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% include "inc/footerb.html" %}

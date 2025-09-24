@@ -1,0 +1,92 @@
+{% load static %}
+{% include "inc/header.html" %}
+
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+  <div class="main-wrapper">
+  
+
+	  {% include "inc/topbar.html" %}
+
+
+
+       
+          {% include "inc/sidebar.html" %}
+	 
+	
+	 
+	 
+	 <div class="page-wrapper">
+        <!-- ============================================================== -->
+        <!-- Container fluid  -->
+        <!-- ============================================================== -->
+        <div class="container-fluid">
+          <!-- ============================================================== -->
+          <!-- Bread crumb and right sidebar toggle -->
+          <!-- ============================================================== -->
+          <div class="row page-titles d-flex align-items-center">
+            <div class="col-md-5 align-self-center">
+              <h3 class="text-themecolor m-0">Dashboard</h3>
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                  <a href="">Home</a>
+                </li>
+                <li class="breadcrumb-item active">Dashboard</li>
+              </ol>
+            </div>
+            
+          </div>
+          <!-- ============================================================== -->
+          <!-- End Bread crumb and right sidebar toggle -->
+          <!-- ============================================================== -->
+  
+
+          <!-- ============================================================== -->
+          <!-- Projects of the Month -->
+          <!-- ============================================================== -->
+<div class="row">
+    <!-- Barberos -->
+    <div class="col-md-4">
+        <div class="card-box bg-orange">
+            <div class="icon"><i class="bi bi-people-fill"></i></div>
+            <h5>Barberos Registrados</h5>
+            <p>{{ num_barberos }}</p>
+            <a href="{% url 'lista_barberos' %}" class="btn-gold-outline">
+                Ver Barberos <i class="bi bi-arrow-right-circle"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Servicios -->
+    <div class="col-md-4">
+        <div class="card-box bg-dark-gray">
+            <div class="icon"><i class="bi bi-scissors"></i></div>
+            <h5>Servicios</h5>
+            <p>{{ num_servicios }}</p>
+            <a href="{% url 'lista_servicios' %}" class="btn-gold-outline">
+                Ver Servicios <i class="bi bi-arrow-right-circle"></i>
+            </a>
+        </div>
+    </div>
+
+
+
+    <!-- Usuarios -->
+    <div class="col-md-4">
+        <div class="card-box bg-green">
+            <div class="icon"><i class="bi bi-person-badge-fill"></i></div>
+            <h5>Usuarios Registrados</h5>
+            <p>{{ num_clientes }}</p>
+            <a href="{% url 'lista_clientes' %}" class="btn-gold-outline">
+                Ver Usuarios <i class="bi bi-arrow-right-circle"></i>
+            </a>
+        </div>
+    </div>
+
+
+
+
+     
+  
+  
+	 {% include "inc/footer.html" %}
