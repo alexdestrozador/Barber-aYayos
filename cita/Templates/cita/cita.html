@@ -1,0 +1,14 @@
+<form method="POST" action="{% url 'crear_cita' %}">
+    {% csrf_token %}
+    <input type="text" name="cliente" placeholder="Cliente" required>
+    <input type="datetime-local" name="fecha_hora" required>
+    
+    <select name="servicio" required>
+        {% for servicio in servicios %}
+            <option value="{{ servicio.id }}">{{ servicio.nombre }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="text" name="estado" placeholder="Estado" required>
+    <button type="submit">Guardar</button>
+</form>

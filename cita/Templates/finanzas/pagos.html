@@ -1,0 +1,58 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'Css/cruds.css' %}">
+
+{% include "inc/header.html" %}
+
+<div class="form-wrapper">
+    <div class="form-card">
+        <h2 class="form-title">💰 Gestión de Pagos</h2>
+
+        <form method="get" class="service-form">
+            <div class="form-group">
+                <label for="estado" class="form-label gold-border-label">Estado:</label>
+                <select name="estado" id="estado" class="form-control black-bg gold-border">
+                    <option value="">Todos</option>
+                    <option value="realizado" {% if estado == 'realizado' %}selected{% endif %}>Realizado</option>
+                    <option value="pendiente" {% if estado == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_inicio" class="form-label gold-border-label">Desde:</label>
+                <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ fecha_inicio }}" class="form-control black-bg gold-border">
+            </div>
+
+            <div class="form-group">
+                <label for="fecha_fin" class="form-label gold-border-label">Hasta:</label>
+                <input type="date" name="fecha_fin" id="fecha_fin" value="{{ fecha_fin }}" class="form-control black-bg gold-border">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-gold">Filtrar</button>
+            </div>
+        </form>
+
+        {% if pagos %}
+            <ul class="styled-list mt-4">
+                {% for pago in pagos %}
+                    <li>
+                        <strong>Cita:</strong> {{ pago.cita }}<br>
+                        <strong>Monto:</strong> <span class="gold-text">${{ pago.monto }}</span><br>
+                        <strong>Fecha:</strong> {{ pago.fecha_pago|date:"d/m/Y" }}<br>
+                        <strong>Estado:</strong>
+                        {% if pago.pagado %}
+                            <span class="gold-text">Realizado</span>
+                        {% else %}
+                            <span class="text-light">Pendiente</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="empty-message gold-text">No hay pagos registrados con esos criterios.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% include "inc/footer.html" %}

@@ -1,0 +1,53 @@
+{% load static %} 
+{% include "inc/header.html" %}
+<link rel="stylesheet" href="{% static 'Css/nuevo_horario.css' %}">
+<link rel="stylesheet" href="{% static 'Public/Css/nuevo_horario.css' %}">
+
+<div class="main-wrapper">
+    <div class="form-card">
+        <h2>Agregar Horarios para Barbero</h2>
+
+        {% if error %}
+            <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group mb-4">
+                <label for="barbero_id">Seleccionar Barbero</label>
+                <select class="form-control" name="barbero_id" id="barbero_id">
+                    <option value="">Seleccione un barbero</option>
+                    {% for barbero in barberos %}
+                        <option value="{{ barbero.id }}">{{ barbero.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+           <p class="mb-3" style="color: #ffd700; font-weight: 500;">
+    Configure los horarios disponibles por día:
+</p>
+
+            {% for dia in dias %}
+                <div class="dia-row">
+                    <div class="form-check">
+                        <input class="form-check-input dia-checkbox" type="checkbox" name="dias" value="{{ dia }}" id="check_{{ dia }}">
+                        <label class="form-check-label" for="check_{{ dia }}">{{ dia|capfirst }}</label>
+                    </div>
+
+                    <div class="hora-inputs">
+                        <input type="time" class="form-control hora-inicio" name="hora_inicio_{{ dia }}" id="hora_inicio_{{ dia }}" disabled>
+                        <input type="time" class="form-control hora-fin" name="hora_fin_{{ dia }}" id="hora_fin_{{ dia }}" disabled>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn btn-submit">Guardar horario</button>
+        </form>
+    </div>
+</div>
+
+
+<script src="{% static 'Js/nuevo_horario.js' %}"></script>
+
+{% include "inc/footer.html" %}
